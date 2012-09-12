@@ -45,9 +45,29 @@
             <Property name="text" type="java.lang.String" value="Edit"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem1">
+            <MenuItem class="javax.swing.JMenuItem" name="cutItem">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Cut"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="copyItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="copy"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="pasteItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="paste"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="indentMenuItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="indent"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="selectAll">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="jMenuItem1"/>
               </Properties>
             </MenuItem>
           </SubComponents>

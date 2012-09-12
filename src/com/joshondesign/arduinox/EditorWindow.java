@@ -24,10 +24,14 @@ import javax.swing.Action;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.JTextComponent;
+import jsyntaxpane.actions.ActionUtils;
 
 /**
  *
@@ -55,6 +59,7 @@ public class EditorWindow extends javax.swing.JFrame {
         
         initComponents();
 
+        openSketchItem.addActionListener(actions.openAction);
         saveMenuItem.addActionListener(actions.saveAction);
         checkMenuItem.addActionListener(actions.checkAction);
         quitMenu.addActionListener(actions.quitAction);
@@ -98,6 +103,45 @@ public class EditorWindow extends javax.swing.JFrame {
             }
         });
         
+        JEditorPane pane = editors.get(0);
+        /*
+        for(Action a : pane.getActions()) {
+            Util.p("action = " + a.getValue(Action.NAME));
+        }
+        */
+        
+        //fix up the actions. this should eventually move to some new location
+        
+        Action cutAction = ActionUtils.getAction(pane, DefaultEditorKit.CutAction.class);
+        cutAction.putValue(Action.NAME, "Cut");
+        cutAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("meta X"));
+        cutItem.setAction(cutAction);
+        
+        Action copy =  ActionUtils.getAction(pane, DefaultEditorKit.CopyAction.class);
+        copy.putValue(Action.NAME, "Copy");
+        copy.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("meta C"));
+        copyItem.setAction(copy);
+        
+        Action pasteAction =  ActionUtils.getAction(pane, DefaultEditorKit.PasteAction.class);
+        pasteAction.putValue(Action.NAME, "Paste");
+        pasteAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("meta V"));        
+        pasteItem.setAction(pasteAction);
+        
+        
+        HashMap<Object, Action> map = createActionTable(pane);
+        Action selectAllAction = map.get(DefaultEditorKit.selectAllAction);
+        selectAllAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("meta A"));
+        selectAll.setAction(selectAllAction);
+    }
+    
+    private HashMap<Object, Action> createActionTable(JTextComponent textComponent) {
+        HashMap<Object, Action> actions = new HashMap<Object, Action>();
+        Action[] actionsArray = textComponent.getActions();
+        for (int i = 0; i < actionsArray.length; i++) {
+            Action a = actionsArray[i];
+            actions.put(a.getValue(Action.NAME), a);
+        }
+        return actions;
     }
     
     
@@ -198,7 +242,11 @@ public class EditorWindow extends javax.swing.JFrame {
         checkMenuItem = new javax.swing.JMenuItem();
         quitMenu = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        cutItem = new javax.swing.JMenuItem();
+        copyItem = new javax.swing.JMenuItem();
+        pasteItem = new javax.swing.JMenuItem();
+        indentMenuItem = new javax.swing.JMenuItem();
+        selectAll = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         zoomInItem = new javax.swing.JMenuItem();
         zoomOutItem = new javax.swing.JMenuItem();
@@ -277,8 +325,20 @@ public class EditorWindow extends javax.swing.JFrame {
 
         jMenu2.setText("Edit");
 
-        jMenuItem1.setText("Cut");
-        jMenu2.add(jMenuItem1);
+        cutItem.setText("Cut");
+        jMenu2.add(cutItem);
+
+        copyItem.setText("copy");
+        jMenu2.add(copyItem);
+
+        pasteItem.setText("paste");
+        jMenu2.add(pasteItem);
+
+        indentMenuItem.setText("indent");
+        jMenu2.add(indentMenuItem);
+
+        selectAll.setText("jMenuItem1");
+        jMenu2.add(selectAll);
 
         jMenuBar1.add(jMenu2);
 
@@ -364,7 +424,10 @@ public class EditorWindow extends javax.swing.JFrame {
     private javax.swing.JButton checkButton;
     private javax.swing.JMenuItem checkMenuItem;
     private javax.swing.JTextArea console;
+    private javax.swing.JMenuItem copyItem;
+    private javax.swing.JMenuItem cutItem;
     private javax.swing.JMenuItem darkThemeItem;
+    private javax.swing.JMenuItem indentMenuItem;
     private javax.swing.JButton jButton3;
     private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JMenu jMenu1;
@@ -372,7 +435,6 @@ public class EditorWindow extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar.Separator jSeparator1;
@@ -381,9 +443,11 @@ public class EditorWindow extends javax.swing.JFrame {
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JMenuItem lightThemeItem;
     private javax.swing.JMenuItem openSketchItem;
+    private javax.swing.JMenuItem pasteItem;
     private javax.swing.JMenuItem quitMenu;
     private javax.swing.JButton runButton;
     private javax.swing.JMenuItem saveMenuItem;
+    private javax.swing.JMenuItem selectAll;
     private javax.swing.JMenuItem standardThemeItem;
     private javax.swing.JTabbedPane tabbedPane;
     private javax.swing.JMenuItem zoomInItem;
