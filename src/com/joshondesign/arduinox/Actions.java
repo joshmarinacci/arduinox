@@ -1,11 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.joshondesign.arduinox;
 
 import com.joshondesign.arduino.common.CompileTask;
 import com.joshondesign.arduino.common.Util;
+import com.joshondesign.arduinox.Sketch.SketchBuffer;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeSupport;
@@ -17,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 /**
@@ -24,6 +22,8 @@ import javax.swing.SwingUtilities;
  * @author josh
  */
 public class Actions  {
+    private List<LogListener> logListeners = new ArrayList<>();
+    final Sketch sketch;
     
     private float fontSize = 12f;
     private ColorTheme STANDARD_THEME;
@@ -39,7 +39,10 @@ public class Actions  {
         @Override
         public void actionPerformed(ActionEvent e) {
             log("the other save");
+            saveBuffers();
         }
+
+
     };
     
     Action checkAction = new AbstractAction("Check") {
@@ -73,8 +76,31 @@ public class Actions  {
         @Override
         public void actionPerformed(ActionEvent e) {
             log("Quitting");
-            System.exit(0);
+            boolean dirty = false;
+            for(SketchBuffer buffer: sketch.getBuffers()) {
+                if(buffer.isDirty()) dirty = true;
+            }
+            if(dirty) {
+                int result = JOptionPane.showConfirmDialog(null, "There are unsaved documents. Do you wish to save them?", "Unsaved Documents", JOptionPane.YES_NO_CANCEL_OPTION);
+                if(result == JOptionPane.YES_OPTION) {
+                    //save them then quit
+                    saveBuffers();
+                    quit();
+                    
+                }
+                if(result == JOptionPane.NO_OPTION) {
+                    //don't save them, then quit
+                    quit();
+                }
+                if(result == JOptionPane.CANCEL_OPTION) {
+                    //don't quit
+                    return;
+                }
+            } else {
+                quit();
+            }
         }
+
     };
     
     
@@ -124,8 +150,6 @@ public class Actions  {
         }
     };
     
-    private List<LogListener> logListeners = new ArrayList<>();
-    final Sketch sketch;
 
     Actions(Sketch sketch) {
         this.sketch = sketch;
@@ -159,4 +183,21 @@ public class Actions  {
         public void log(String str);
     }
     
+    private void saveBuffers() {
+        for(Sketch.SketchBuffer buffer : sketch.getBuffers()) {
+            if(buffer.isDirty()) {
+                try {
+                    Util.p("saving: " + buffer.getFile().getName());
+                    Util.toFile(buffer.getText(), buffer.getFile());
+                } catch (IOException ex) {
+                    Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                buffer.markClean();
+            }
+        }
+    }
+    
+    private void quit() {
+        System.exit(0);
+    }
 }

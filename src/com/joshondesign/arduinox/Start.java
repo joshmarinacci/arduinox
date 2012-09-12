@@ -45,6 +45,7 @@ public class Start {
                     
                     DefaultSyntaxKit.initKit();
                     Configuration config = DefaultSyntaxKit.getConfig(DefaultSyntaxKit.class);
+                    /*
                     //line number gutter
                     config.put("LineNumbers.Foreground", "0xff0000");
                     config.put("LineNumbers.Background", "0xffff00");
@@ -54,6 +55,7 @@ public class Start {
                     config.put("PairMarker.Color","0x000000"); //paren matching
                     config.put("SelectionColor","0x00ffff"); //actual selection
                     config.put("TokenMarker.Color","0xFF00ff"); //highlight matching tokens
+                    */
                     
                     File sketchDir = new File("/Users/josh/Documents/Arduino/Blink");
                     Sketch sketch  = new Sketch(sketchDir);

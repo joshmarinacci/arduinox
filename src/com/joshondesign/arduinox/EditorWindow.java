@@ -5,22 +5,29 @@
 package com.joshondesign.arduinox;
 
 import com.joshondesign.arduino.common.Util;
+import com.joshondesign.arduinox.Sketch.SketchBuffer;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  *
@@ -30,6 +37,7 @@ public class EditorWindow extends javax.swing.JFrame {
     
     private List<JEditorPane> editors = new ArrayList<>();
     private Font customFont;
+    private Map<SketchBuffer,JScrollPane> scrolls = new HashMap<>();
 
     /**
      * Creates new form EditorWindow
@@ -57,7 +65,7 @@ public class EditorWindow extends javax.swing.JFrame {
         darkThemeItem.addActionListener(actions.switchDarkTheme);
         
         for(Sketch.SketchBuffer buffer : actions.sketch.getBuffers()) {
-            tabbedPane.add(buffer.getName(),createNewTab(buffer));
+            createNewTab(tabbedPane,buffer);
         }
         checkButton.addActionListener(actions.checkAction);
         runButton.addActionListener(actions.runAction);
@@ -94,8 +102,9 @@ public class EditorWindow extends javax.swing.JFrame {
     
     
     private class CustomEditorPane extends JEditorPane {
+        private final SketchBuffer buffer;
 
-        public CustomEditorPane() {
+        public CustomEditorPane(SketchBuffer buffer) {
             super();
             LookAndFeel laf = UIManager.getLookAndFeel();
             if ( laf.getID().equals("Nimbus") )
@@ -103,14 +112,16 @@ public class EditorWindow extends javax.swing.JFrame {
               //ugly fix so that we can change background in Nimbus
               setUI(new javax.swing.plaf.basic.BasicEditorPaneUI());
             }                    
-            setBackground(new Color(230,230,00));
+            //setBackground(new Color(230,230,00));
+            
+            this.buffer = buffer;
         }
     }
 
     
-    private JScrollPane createNewTab(Sketch.SketchBuffer buffer) {
-        JEditorPane pane = new CustomEditorPane();
-        JScrollPane scroll = new JScrollPane(pane);
+    private void createNewTab(final JTabbedPane tabs, final Sketch.SketchBuffer buffer) {
+        CustomEditorPane pane = new CustomEditorPane(buffer);
+        final JScrollPane scroll = new JScrollPane(pane);
         pane.setContentType("text/java");
         //pane.setFont(new Font("Monaco",Font.PLAIN,12));
         pane.setFont(customFont.deriveFont(12f));
@@ -119,8 +130,44 @@ public class EditorWindow extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(EditorWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
         this.editors.add(pane);
-        return scroll;
+        this.scrolls.put(buffer,scroll);
+        
+        //TODO: this could probably be made shared
+        pane.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                buffer.markDirty();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                buffer.markDirty();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                buffer.markDirty();
+            }
+        });
+        
+
+        //TODO: this could be made into a reusable listener shared by all buffers
+        buffer.addPropertyChangeListener("dirty",new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                int n = tabs.indexOfComponent(scrolls.get(buffer));
+                Util.p("n = " + n);
+                if(buffer.isDirty()) {
+                    tabs.setTitleAt(0, buffer.getName() + " *");
+                } else {
+                    tabs.setTitleAt(0, buffer.getName());
+                }
+            }
+        });
+        
+        tabs.add(buffer.getName(),scroll);
     }
     
     /**
