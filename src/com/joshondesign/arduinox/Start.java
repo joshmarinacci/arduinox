@@ -15,6 +15,7 @@ import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.basic.BasicEditorPaneUI;
 import jsyntaxpane.DefaultSyntaxKit;
+import jsyntaxpane.actions.ActionUtils;
 import jsyntaxpane.util.Configuration;
 
 /**

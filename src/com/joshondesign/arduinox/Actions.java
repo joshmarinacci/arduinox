@@ -4,7 +4,10 @@ import com.joshondesign.arduino.common.CompileTask;
 import com.joshondesign.arduino.common.Util;
 import com.joshondesign.arduinox.Sketch.SketchBuffer;
 import java.awt.Color;
+import java.awt.FileDialog;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
@@ -149,6 +152,29 @@ public class Actions  {
             pcs.firePropertyChange("theme", old, theme);
         }
     };
+    final ActionListener openAction = new AbstractAction("open") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            FileDialog fd = new FileDialog((Frame)null);
+            fd.setMode(FileDialog.LOAD);
+            fd.show();
+            String fileName = fd.getFile();
+            if(fileName == null) return;
+            String dirName = fd.getDirectory();
+            if(fileName.toLowerCase().endsWith(".ino")) {
+                File file = new File(dirName,fileName);
+                if(file.isDirectory()) {
+                    Util.p("is dir");
+                }
+                if(file.isFile()) {
+                    Util.p("is file");
+                    File dir = file.getParentFile();
+                    openNewSketch(dir);
+                }
+            }
+        }
+
+    };
     
 
     Actions(Sketch sketch) {
@@ -199,5 +225,18 @@ public class Actions  {
     
     private void quit() {
         System.exit(0);
+    }
+    
+    private void openNewSketch(File dir) {
+        try {
+            Sketch sketch = new Sketch(dir);
+            Actions actions = new Actions(sketch);
+            EditorWindow frame = new EditorWindow(actions);
+            frame.pack();
+            frame.setSize(800,600);        
+            frame.setVisible(true);
+        } catch (IOException ex) {
+            Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
