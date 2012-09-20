@@ -58,14 +58,15 @@ public class Start {
                     config.put("TokenMarker.Color","0xFF00ff"); //highlight matching tokens
                     */
                     
+                    
+                    Global global = Global.getGlobal();
+                    
                     File sketchDir = new File("/Users/josh/Documents/Arduino/Blink");
                     Sketch sketch  = new Sketch(sketchDir);
+                    global.sketches.add(sketch);
                     
                     Actions actions = new Actions(sketch);
                     EditorWindow frame = new EditorWindow(actions);
-                    /*
-                    frame.setContentPane(new EditorPane(actions));
-                    */
                     frame.pack();
                     frame.setSize(800,600);
                     frame.setVisible(true);

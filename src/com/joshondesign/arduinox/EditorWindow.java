@@ -1,11 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.joshondesign.arduinox;
 
 import com.joshondesign.arduino.common.Util;
 import com.joshondesign.arduinox.Sketch.SketchBuffer;
+import gnu.io.CommPortIdentifier;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -14,14 +11,20 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JEditorPane;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
@@ -42,6 +45,7 @@ public class EditorWindow extends javax.swing.JFrame {
     private List<JEditorPane> editors = new ArrayList<>();
     private Font customFont;
     private Map<SketchBuffer,JScrollPane> scrolls = new HashMap<>();
+    private Actions actions = null;
 
     /**
      * Creates new form EditorWindow
@@ -50,6 +54,7 @@ public class EditorWindow extends javax.swing.JFrame {
         initComponents();
     }
     public EditorWindow(Actions actions) {
+        this.actions = actions;
         try {
             customFont = Font.createFont(Font.TRUETYPE_FONT, EditorWindow.class.getResourceAsStream("resources/UbuntuMono-R.ttf"));
             //Font font2 = Font.createFont(Font.TRUETYPE_FONT, EditorPane.class.getResourceAsStream("resources/UbuntuMono-B.ttf"));
@@ -58,7 +63,8 @@ public class EditorWindow extends javax.swing.JFrame {
         }
         
         initComponents();
-
+        
+        newSketchItem.addActionListener(actions.newAction);
         openSketchItem.addActionListener(actions.openAction);
         saveMenuItem.addActionListener(actions.saveAction);
         checkMenuItem.addActionListener(actions.checkAction);
@@ -132,6 +138,34 @@ public class EditorWindow extends javax.swing.JFrame {
         Action selectAllAction = map.get(DefaultEditorKit.selectAllAction);
         selectAllAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("meta A"));
         selectAll.setAction(selectAllAction);
+        List<SerialPort> ports = scanForSerialPorts();
+        
+        serialportDropdown.setModel(new DefaultComboBoxModel(ports.toArray()));
+        serialportDropdown.setRenderer(new SerialPortComboBoxRenderer());
+        
+        
+        
+        if(actions.sketch.currentPort == null) {
+            actions.sketch.currentPort = ports.get(0);
+        }
+        
+        Util.p("the final selected port = " + actions.sketch.currentPort);
+    }
+    
+    
+    public static class SerialPortComboBoxRenderer extends DefaultListCellRenderer {
+
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            Component comp = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            if(comp instanceof JLabel && value instanceof SerialPort) {
+                JLabel label = (JLabel) comp;
+                SerialPort port = (SerialPort) value;
+                label.setText(port.shortName);
+            }
+            return comp;
+        }
+        
     }
     
     private HashMap<Object, Action> createActionTable(JTextComponent textComponent) {
@@ -164,7 +198,7 @@ public class EditorWindow extends javax.swing.JFrame {
 
     
     private void createNewTab(final JTabbedPane tabs, final Sketch.SketchBuffer buffer) {
-        CustomEditorPane pane = new CustomEditorPane(buffer);
+        final CustomEditorPane pane = new CustomEditorPane(buffer);
         final JScrollPane scroll = new JScrollPane(pane);
         pane.setContentType("text/java");
         //pane.setFont(new Font("Monaco",Font.PLAIN,12));
@@ -183,6 +217,7 @@ public class EditorWindow extends javax.swing.JFrame {
             @Override
             public void insertUpdate(DocumentEvent e) {
                 buffer.markDirty();
+                buffer.setText(pane.getText());
             }
 
             @Override
@@ -202,7 +237,6 @@ public class EditorWindow extends javax.swing.JFrame {
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 int n = tabs.indexOfComponent(scrolls.get(buffer));
-                Util.p("n = " + n);
                 if(buffer.isDirty()) {
                     tabs.setTitleAt(0, buffer.getName() + " *");
                 } else {
@@ -213,6 +247,54 @@ public class EditorWindow extends javax.swing.JFrame {
         
         tabs.add(buffer.getName(),scroll);
     }
+    
+    private List<SerialPort> scanForSerialPorts() {
+        
+        List<SerialPort> ports = new ArrayList<>();
+        
+        //get all ports
+        for (Enumeration enumeration = CommPortIdentifier.getPortIdentifiers(); enumeration.hasMoreElements();) {
+            CommPortIdentifier port = (CommPortIdentifier) enumeration.nextElement();
+            SerialPort pt = new SerialPort();
+            pt.portName = port.getName();
+            ports.add(pt);
+        }
+        
+        //filter out dupes
+        if(Util.isMacOSX()) {
+            Map<String,SerialPort> map = new HashMap<>();
+            for(SerialPort port : ports) {
+                String shortName = port.portName;
+                if(port.portName.startsWith("/dev/tty")) {
+                    shortName = port.portName.replaceFirst("/dev/tty.", "");
+                }
+                if(port.portName.startsWith("/dev/cu")) {
+                    shortName = port.portName.replaceFirst("/dev/cu.", "");
+                }
+                port.shortName = shortName;
+                map.put(shortName,port);
+            }
+            
+            ports.clear();
+            ports.addAll(map.values());
+        }
+        
+        //remove manually blocked items (such as bluetooth)
+        Iterator<SerialPort> it = ports.iterator();
+        while(it.hasNext()) {
+            SerialPort port = it.next();
+            if(port.shortName.toLowerCase().contains("bluetooth")) it.remove();
+        }
+        
+        for(SerialPort port : ports) {
+            Util.p("final port = " + port.portName + " short = " + port.shortName);
+        }
+        
+        //sort by name
+        //if only one, use it.
+        return ports;
+    }
+    
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -235,8 +317,12 @@ public class EditorWindow extends javax.swing.JFrame {
         runButton = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
         jButton3 = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
+        jLabel1 = new javax.swing.JLabel();
+        serialportDropdown = new javax.swing.JComboBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        newSketchItem = new javax.swing.JMenuItem();
         openSketchItem = new javax.swing.JMenuItem();
         saveMenuItem = new javax.swing.JMenuItem();
         checkMenuItem = new javax.swing.JMenuItem();
@@ -304,7 +390,29 @@ public class EditorWindow extends javax.swing.JFrame {
         jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(jButton3);
 
+        jSeparator2.setMaximumSize(new java.awt.Dimension(40, 2147483647));
+        jSeparator2.setMinimumSize(new java.awt.Dimension(40, 1));
+        jSeparator2.setPreferredSize(new java.awt.Dimension(11, 40));
+        jToolBar1.add(jSeparator2);
+
+        jLabel1.setText("Serial Port");
+        jToolBar1.add(jLabel1);
+
+        serialportDropdown.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        serialportDropdown.setAlignmentX(1.0F);
+        serialportDropdown.setMaximumSize(new java.awt.Dimension(400, 32767));
+        serialportDropdown.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                serialPortChanged(evt);
+            }
+        });
+        jToolBar1.add(serialportDropdown);
+
         jMenu1.setText("File");
+
+        newSketchItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.META_MASK));
+        newSketchItem.setText("New Sketch");
+        jMenu1.add(newSketchItem);
 
         openSketchItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.META_MASK));
         openSketchItem.setText("Open Sketch");
@@ -386,6 +494,13 @@ public class EditorWindow extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void serialPortChanged(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serialPortChanged
+        SerialPort port = (SerialPort) serialportDropdown.getSelectedItem();
+        Util.p("I chose the serial port " + port);
+        actions.sketch.currentPort = port;
+        
+    }//GEN-LAST:event_serialPortChanged
+
     /**
      * @param args the command line arguments
      */
@@ -430,6 +545,7 @@ public class EditorWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem indentMenuItem;
     private javax.swing.JButton jButton3;
     private javax.swing.JEditorPane jEditorPane1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
@@ -438,16 +554,19 @@ public class EditorWindow extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar.Separator jSeparator1;
+    private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JMenuItem lightThemeItem;
+    private javax.swing.JMenuItem newSketchItem;
     private javax.swing.JMenuItem openSketchItem;
     private javax.swing.JMenuItem pasteItem;
     private javax.swing.JMenuItem quitMenu;
     private javax.swing.JButton runButton;
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenuItem selectAll;
+    private javax.swing.JComboBox serialportDropdown;
     private javax.swing.JMenuItem standardThemeItem;
     private javax.swing.JTabbedPane tabbedPane;
     private javax.swing.JMenuItem zoomInItem;

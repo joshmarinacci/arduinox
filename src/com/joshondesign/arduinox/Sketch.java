@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.joshondesign.arduinox;
 
 import java.io.File;
@@ -12,14 +8,11 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 
-/**
- *
- * @author josh
- */
 public class Sketch {
     private String name;
     private List<SketchBuffer> buffers;
     private final File dir;
+    SerialPort currentPort = null;
 
     Sketch(File sketchDir) throws IOException {
         this.dir = sketchDir;
@@ -36,19 +29,28 @@ public class Sketch {
     String getName() {
         return this.name;
     }
+
+    File getDirectory() {
+        return this.dir;
+    }
     
     
     
     
     public static class SketchBuffer {
         private final File file;
-        private final String code;
+        private String code;
         private boolean dirty = false;
         private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
         
         private SketchBuffer(File file) throws IOException {
             this.file = file;
-            this.code = Util.toString(file);
+            try {
+                this.code = Util.toString(file);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                this.code = "";
+            }
         }
         
         public String getName() {
@@ -81,6 +83,11 @@ public class Sketch {
 
         void addPropertyChangeListener(String name, PropertyChangeListener listener) {
             pcs.addPropertyChangeListener(name, listener);
+        }
+
+        void setText(String text) {
+            this.code = text;
+            Util.p("code updated to: " + text);
         }
         
     }

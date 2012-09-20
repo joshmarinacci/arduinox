@@ -57,7 +57,7 @@ public class Actions  {
                     try {
                         log("the other check");
                         CompileTask task = new CompileTask();
-                        task.setSketchDir(new File("/Users/Josh/Documents/Arduino/Blink"));
+                        task.setSketchDir(sketch.getDirectory());
                         task.assemble();
                         log("fully assembled");
                     } catch (IOException ex) {
@@ -71,7 +71,26 @@ public class Actions  {
     Action runAction = new AbstractAction("Run") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            log("the other run");
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        log("Compiling");
+                        CompileTask task = new CompileTask();
+                        task.setSketchDir(sketch.getDirectory());
+                        task.setUserLibrariesDir(new File("/Users/josh/Documents/Arduino/Libraries"));
+                        task.setArduinoLibrariesDir(new File("/Users/josh/projects/Arduino.app/Contents/Resources/Java/libraries"));
+                        task.setHardwareDir(new File("/Users/josh/projects/Arduino.app/Contents/Resources/Java/hardware/"));
+                        task.setUploadPortPath(sketch.currentPort.portName);
+                        task.assemble();
+                        log("downloading to the device");
+                        task.download();
+                        log("finished downloading");
+                    } catch (IOException ex) {
+                        Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }).start();
         }
     };
     
@@ -80,8 +99,10 @@ public class Actions  {
         public void actionPerformed(ActionEvent e) {
             log("Quitting");
             boolean dirty = false;
-            for(SketchBuffer buffer: sketch.getBuffers()) {
-                if(buffer.isDirty()) dirty = true;
+            for(Sketch sketch : Global.getGlobal().sketches) {
+                for(SketchBuffer buffer: sketch.getBuffers()) {
+                    if(buffer.isDirty()) dirty = true;
+                }
             }
             if(dirty) {
                 int result = JOptionPane.showConfirmDialog(null, "There are unsaved documents. Do you wish to save them?", "Unsaved Documents", JOptionPane.YES_NO_CANCEL_OPTION);
@@ -176,6 +197,30 @@ public class Actions  {
 
     };
     
+    final Action newAction = new AbstractAction("new") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                Util.p("creating a new sketch");
+                String name = JOptionPane.showInputDialog(null, "Name for your new sketch", "NewSketch1");
+                        
+                File sketchDir = new File("/Users/josh/Documents/Arduino/",name);
+                sketchDir.mkdir();
+                Sketch sketch  = new Sketch(sketchDir);
+                Global.getGlobal().sketches.add(sketch);
+                        
+                Actions actions = new Actions(sketch);
+                EditorWindow frame = new EditorWindow(actions);
+                frame.setTitle(name);
+                frame.pack();
+                frame.setSize(800,600);
+                frame.setVisible(true);
+            } catch (IOException ex) {
+                Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    };
+    
 
     Actions(Sketch sketch) {
         this.sketch = sketch;
@@ -213,7 +258,8 @@ public class Actions  {
         for(Sketch.SketchBuffer buffer : sketch.getBuffers()) {
             if(buffer.isDirty()) {
                 try {
-                    Util.p("saving: " + buffer.getFile().getName());
+                    Util.p("saving: " + buffer.getFile().getAbsolutePath());
+                    Util.p("text = " + buffer.getText());
                     Util.toFile(buffer.getText(), buffer.getFile());
                 } catch (IOException ex) {
                     Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
