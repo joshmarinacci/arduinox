@@ -41,11 +41,8 @@ public class Actions  {
     Action saveAction = new AbstractAction("Save") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            log("the other save");
             saveBuffers();
         }
-
-
     };
     
     Action checkAction = new AbstractAction("Check") {
@@ -81,7 +78,7 @@ public class Actions  {
                         task.setUserLibrariesDir(new File("/Users/josh/Documents/Arduino/Libraries"));
                         task.setArduinoLibrariesDir(new File("/Users/josh/projects/Arduino.app/Contents/Resources/Java/libraries"));
                         task.setHardwareDir(new File("/Users/josh/projects/Arduino.app/Contents/Resources/Java/hardware/"));
-                        task.setUploadPortPath(sketch.currentPort.portName);
+                        task.setUploadPortPath(sketch.getCurrentPort().portName);
                         task.assemble();
                         log("downloading to the device");
                         task.download();
@@ -268,6 +265,11 @@ public class Actions  {
                 }
                 buffer.markClean();
             }
+        }
+        try {
+            sketch.saveSettings();
+        } catch (IOException ex) {
+            Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

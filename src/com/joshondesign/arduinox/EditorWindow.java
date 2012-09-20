@@ -139,16 +139,17 @@ public class EditorWindow extends javax.swing.JFrame {
         Action selectAllAction = map.get(DefaultEditorKit.selectAllAction);
         selectAllAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("meta A"));
         selectAll.setAction(selectAllAction);
-        List<SerialPort> ports = scanForSerialPorts();
-        
-        serialportDropdown.setModel(new DefaultComboBoxModel(ports.toArray()));
+        serialportDropdown.setModel(new DefaultComboBoxModel(Global.getGlobal().getPorts().toArray()));
         serialportDropdown.setRenderer(new SerialPortComboBoxRenderer());
         
         
         
-        if(actions.sketch.currentPort == null) {
-            actions.sketch.currentPort = ports.get(0);
+        if(actions.sketch.getCurrentPort() == null) {
+            if(Global.getGlobal().getPorts().size() > 0) {
+                actions.sketch.setCurrentPort(Global.getGlobal().getPorts().get(0));
+            }
         }
+        serialportDropdown.setSelectedItem(actions.sketch.getCurrentPort());
         
         
         rebuildWindowMenu();
@@ -272,52 +273,6 @@ public class EditorWindow extends javax.swing.JFrame {
         tabs.add(buffer.getName(),scroll);
     }
     
-    private List<SerialPort> scanForSerialPorts() {
-        
-        List<SerialPort> ports = new ArrayList<>();
-        
-        //get all ports
-        for (Enumeration enumeration = CommPortIdentifier.getPortIdentifiers(); enumeration.hasMoreElements();) {
-            CommPortIdentifier port = (CommPortIdentifier) enumeration.nextElement();
-            SerialPort pt = new SerialPort();
-            pt.portName = port.getName();
-            ports.add(pt);
-        }
-        
-        //filter out dupes
-        if(Util.isMacOSX()) {
-            Map<String,SerialPort> map = new HashMap<>();
-            for(SerialPort port : ports) {
-                String shortName = port.portName;
-                if(port.portName.startsWith("/dev/tty")) {
-                    shortName = port.portName.replaceFirst("/dev/tty.", "");
-                }
-                if(port.portName.startsWith("/dev/cu")) {
-                    shortName = port.portName.replaceFirst("/dev/cu.", "");
-                }
-                port.shortName = shortName;
-                map.put(shortName,port);
-            }
-            
-            ports.clear();
-            ports.addAll(map.values());
-        }
-        
-        //remove manually blocked items (such as bluetooth)
-        Iterator<SerialPort> it = ports.iterator();
-        while(it.hasNext()) {
-            SerialPort port = it.next();
-            if(port.shortName.toLowerCase().contains("bluetooth")) it.remove();
-        }
-        
-        for(SerialPort port : ports) {
-            Util.p("final port = " + port.portName + " short = " + port.shortName);
-        }
-        
-        //sort by name
-        //if only one, use it.
-        return ports;
-    }
     
     
     /**
@@ -521,7 +476,7 @@ public class EditorWindow extends javax.swing.JFrame {
     private void serialPortChanged(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serialPortChanged
         SerialPort port = (SerialPort) serialportDropdown.getSelectedItem();
         Util.p("I chose the serial port " + port);
-        actions.sketch.currentPort = port;
+        actions.sketch.setCurrentPort(port);
         
     }//GEN-LAST:event_serialPortChanged
 

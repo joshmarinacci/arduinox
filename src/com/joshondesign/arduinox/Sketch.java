@@ -6,13 +6,19 @@ import java.util.List;
 import com.joshondesign.arduino.common.Util;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Sketch {
     private String name;
     private List<SketchBuffer> buffers;
     private final File dir;
-    SerialPort currentPort = null;
+    private SerialPort currentPort = null;
+    private Properties props;
 
     Sketch(File sketchDir) throws IOException {
         this.dir = sketchDir;
@@ -20,6 +26,7 @@ public class Sketch {
         this.buffers = new ArrayList<>();
         
         buffers.add(new SketchBuffer(new File(sketchDir,sketchDir.getName()+".ino")));
+        loadSettings();
     }
     
     List<SketchBuffer> getBuffers() {
@@ -32,6 +39,48 @@ public class Sketch {
 
     File getDirectory() {
         return this.dir;
+    }
+    
+    private void loadSettings() throws IOException {
+        props = new Properties();
+        File propsFile = new File(dir,"settings.properties");
+        if(propsFile.exists()) {
+            props.load(new FileReader(propsFile));
+        }
+        if(props.containsKey("SERIALPORT")) {
+            String portName = props.getProperty("SERIALPORT");
+            currentPort = Global.getGlobal().getPortForPath(portName);
+        }
+        
+        Util.p("the current serial port = " + currentPort);
+        if(currentPort != null) {
+            Util.p("current port name = " + currentPort.portName);
+        }
+    }
+    
+    
+    
+    public void saveSettings() throws IOException {
+        File propsFile = new File(dir,"settings.properties");
+        props.store(new FileWriter(propsFile), "");
+        Util.p("saved settings to : " + propsFile.getAbsolutePath());
+        Util.p("serial port = " + props.getProperty("SERIALPORT"));
+    }
+
+    SerialPort getCurrentPort() {
+        return this.currentPort;
+    }
+
+    void setCurrentPort(SerialPort port) {
+        this.currentPort = port;
+        if(this.currentPort != null) {
+            this.props.setProperty("SERIALPORT", currentPort.portName);
+            try {
+                saveSettings();
+            } catch (IOException ex) {
+                Logger.getLogger(Sketch.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
     
     
