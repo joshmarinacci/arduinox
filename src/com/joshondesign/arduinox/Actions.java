@@ -99,7 +99,7 @@ public class Actions  {
         public void actionPerformed(ActionEvent e) {
             log("Quitting");
             boolean dirty = false;
-            for(Sketch sketch : Global.getGlobal().sketches) {
+            for(Sketch sketch : Global.getGlobal().getSketches()) {
                 for(SketchBuffer buffer: sketch.getBuffers()) {
                     if(buffer.isDirty()) dirty = true;
                 }
@@ -173,6 +173,7 @@ public class Actions  {
             pcs.firePropertyChange("theme", old, theme);
         }
     };
+    
     final ActionListener openAction = new AbstractAction("open") {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -207,10 +208,11 @@ public class Actions  {
                 File sketchDir = new File("/Users/josh/Documents/Arduino/",name);
                 sketchDir.mkdir();
                 Sketch sketch  = new Sketch(sketchDir);
-                Global.getGlobal().sketches.add(sketch);
+                Global.getGlobal().addSketch(sketch);
                         
                 Actions actions = new Actions(sketch);
                 EditorWindow frame = new EditorWindow(actions);
+                Global.getGlobal().setWindowForSketch(sketch, frame);
                 frame.setTitle(name);
                 frame.pack();
                 frame.setSize(800,600);
@@ -276,8 +278,10 @@ public class Actions  {
     private void openNewSketch(File dir) {
         try {
             Sketch sketch = new Sketch(dir);
+            Global.getGlobal().addSketch(sketch);
             Actions actions = new Actions(sketch);
             EditorWindow frame = new EditorWindow(actions);
+            Global.getGlobal().setWindowForSketch(sketch,frame);
             frame.pack();
             frame.setSize(800,600);        
             frame.setVisible(true);

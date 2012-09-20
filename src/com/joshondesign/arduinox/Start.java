@@ -63,10 +63,11 @@ public class Start {
                     
                     File sketchDir = new File("/Users/josh/Documents/Arduino/Blink");
                     Sketch sketch  = new Sketch(sketchDir);
-                    global.sketches.add(sketch);
+                    global.addSketch(sketch);
                     
                     Actions actions = new Actions(sketch);
                     EditorWindow frame = new EditorWindow(actions);
+                    global.setWindowForSketch(sketch, frame);
                     frame.pack();
                     frame.setSize(800,600);
                     frame.setVisible(true);

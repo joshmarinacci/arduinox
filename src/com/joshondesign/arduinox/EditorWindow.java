@@ -25,6 +25,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
@@ -149,7 +150,30 @@ public class EditorWindow extends javax.swing.JFrame {
             actions.sketch.currentPort = ports.get(0);
         }
         
-        Util.p("the final selected port = " + actions.sketch.currentPort);
+        
+        rebuildWindowMenu();
+        //register to listen for changes
+        Global.getGlobal().addPropertyChangeListener("sketches", new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                rebuildWindowMenu();
+            }
+        });
+    }
+
+    private void rebuildWindowMenu() {
+        //setup the windows menu to auto update
+        windowMenu.removeAll();
+        for(final Sketch sketch :Global.getGlobal().getSketches()) {
+            AbstractAction action = new AbstractAction() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Global.getGlobal().getWindowForSketch(sketch).toFront();
+                }
+            };
+            action.putValue(Action.NAME, sketch.getName());
+            windowMenu.add(action);
+        }
     }
     
     
@@ -339,7 +363,7 @@ public class EditorWindow extends javax.swing.JFrame {
         standardThemeItem = new javax.swing.JMenuItem();
         lightThemeItem = new javax.swing.JMenuItem();
         darkThemeItem = new javax.swing.JMenuItem();
-        jMenu4 = new javax.swing.JMenu();
+        windowMenu = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -471,8 +495,8 @@ public class EditorWindow extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu3);
 
-        jMenu4.setText("Window");
-        jMenuBar1.add(jMenu4);
+        windowMenu.setText("Window");
+        jMenuBar1.add(windowMenu);
 
         setJMenuBar(jMenuBar1);
 
@@ -549,7 +573,6 @@ public class EditorWindow extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
-    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -569,6 +592,7 @@ public class EditorWindow extends javax.swing.JFrame {
     private javax.swing.JComboBox serialportDropdown;
     private javax.swing.JMenuItem standardThemeItem;
     private javax.swing.JTabbedPane tabbedPane;
+    private javax.swing.JMenu windowMenu;
     private javax.swing.JMenuItem zoomInItem;
     private javax.swing.JMenuItem zoomOutItem;
     // End of variables declaration//GEN-END:variables
