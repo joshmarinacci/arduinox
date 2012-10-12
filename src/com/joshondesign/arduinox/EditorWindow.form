@@ -68,6 +68,16 @@
                 <Property name="text" type="java.lang.String" value="paste"/>
               </Properties>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="undoItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="undo"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="redoItem">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="redo"/>
+              </Properties>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="indentMenuItem">
               <Properties>
                 <Property name="text" type="java.lang.String" value="indent"/>
@@ -75,8 +85,11 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="selectAll">
               <Properties>
-                <Property name="text" type="java.lang.String" value="jMenuItem1"/>
+                <Property name="text" type="java.lang.String" value="selectall"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="selectAllActionPerformed"/>
+              </Events>
             </MenuItem>
           </SubComponents>
         </Menu>

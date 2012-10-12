@@ -12,6 +12,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,6 +40,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.JTextComponent;
+import javax.swing.text.Keymap;
 import jsyntaxpane.actions.ActionUtils;
 
 /**
@@ -50,17 +54,15 @@ public class EditorWindow extends javax.swing.JFrame {
     private Map<SketchBuffer,JScrollPane> scrolls = new HashMap<>();
     private Actions actions = null;
 
-    /**
-     * Creates new form EditorWindow
-     */
     public EditorWindow() {
         initComponents();
     }
+    
+    
     public EditorWindow(Actions actions) {
         this.actions = actions;
         try {
-            customFont = Font.createFont(Font.TRUETYPE_FONT, EditorWindow.class.getResourceAsStream("resources/UbuntuMono-R.ttf"));
-            //Font font2 = Font.createFont(Font.TRUETYPE_FONT, EditorPane.class.getResourceAsStream("resources/UbuntuMono-B.ttf"));
+            customFont = Font.createFont(Font.TRUETYPE_FONT, EditorWindow.class.getResourceAsStream("resources/SourceCodePro-Regular.ttf"));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -112,12 +114,21 @@ public class EditorWindow extends javax.swing.JFrame {
             }
         });
         
-        JEditorPane pane = editors.get(0);
-        /*
-        for(Action a : pane.getActions()) {
-            Util.p("action = " + a.getValue(Action.NAME));
+        JEditorPane pane = editors.get(0);       
+        Util.p("editor = " + pane);
+        List<Action> list = Arrays.asList(pane.getActions());
+        Collections.sort(list, new Comparator<Action>() {
+
+            @Override
+            public int compare(Action o1, Action o2) {
+                return ((String)o1.getValue(Action.NAME)).compareTo((String)o2.getValue(Action.NAME));
+            }
+        });
+        
+        for(Action a : list) {
+            Util.p("action = " + a.getValue(Action.NAME) + "   shortcut = " + a.getValue(Action.ACCELERATOR_KEY) );
         }
-        */
+        
         
         //fix up the actions. this should eventually move to some new location
         
@@ -137,10 +148,23 @@ public class EditorWindow extends javax.swing.JFrame {
         pasteItem.setAction(pasteAction);
         
         
+        
+        
+        
         HashMap<Object, Action> map = createActionTable(pane);
         Action selectAllAction = map.get(DefaultEditorKit.selectAllAction);
         selectAllAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("meta A"));
         selectAll.setAction(selectAllAction);
+
+        undoItem.setAction(ActionUtils.getAction(pane, jsyntaxpane.actions.UndoAction.class));
+        redoItem.setAction(ActionUtils.getAction(pane, jsyntaxpane.actions.RedoAction.class));
+        
+        
+        
+        KeyboardUtils.setup(pane);
+        
+        
+        
         Object[] ports = Global.getGlobal().getPorts().toArray();
         serialportDropdown.setModel(new DefaultComboBoxModel(ports));
         serialportDropdown.setRenderer(new SerialPortComboBoxRenderer());
@@ -333,6 +357,8 @@ public class EditorWindow extends javax.swing.JFrame {
         cutItem = new javax.swing.JMenuItem();
         copyItem = new javax.swing.JMenuItem();
         pasteItem = new javax.swing.JMenuItem();
+        undoItem = new javax.swing.JMenuItem();
+        redoItem = new javax.swing.JMenuItem();
         indentMenuItem = new javax.swing.JMenuItem();
         selectAll = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
@@ -455,10 +481,21 @@ public class EditorWindow extends javax.swing.JFrame {
         pasteItem.setText("paste");
         jMenu2.add(pasteItem);
 
+        undoItem.setText("undo");
+        jMenu2.add(undoItem);
+
+        redoItem.setText("redo");
+        jMenu2.add(redoItem);
+
         indentMenuItem.setText("indent");
         jMenu2.add(indentMenuItem);
 
-        selectAll.setText("jMenuItem1");
+        selectAll.setText("selectall");
+        selectAll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                selectAllActionPerformed(evt);
+            }
+        });
         jMenu2.add(selectAll);
 
         jMenuBar1.add(jMenu2);
@@ -519,6 +556,10 @@ public class EditorWindow extends javax.swing.JFrame {
         Util.p("chose the device: " + device.name);
         actions.sketch.setCurrentDevice(device);
     }//GEN-LAST:event_deviceChanged
+
+    private void selectAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_selectAllActionPerformed
 
     /**
      * @param args the command line arguments
@@ -583,12 +624,14 @@ public class EditorWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem openSketchItem;
     private javax.swing.JMenuItem pasteItem;
     private javax.swing.JMenuItem quitMenu;
+    private javax.swing.JMenuItem redoItem;
     private javax.swing.JButton runButton;
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenuItem selectAll;
     private javax.swing.JComboBox serialportDropdown;
     private javax.swing.JMenuItem standardThemeItem;
     private javax.swing.JTabbedPane tabbedPane;
+    private javax.swing.JMenuItem undoItem;
     private javax.swing.JMenu windowMenu;
     private javax.swing.JMenuItem zoomInItem;
     private javax.swing.JMenuItem zoomOutItem;

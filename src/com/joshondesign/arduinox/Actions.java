@@ -148,6 +148,7 @@ public class Actions  {
     Action switchStandardTheme = new AbstractAction("standardtheme") {
         @Override
         public void actionPerformed(ActionEvent e) {
+            Util.p("Switching to the standard theme");
             ColorTheme old = theme;
             theme = STANDARD_THEME;
             pcs.firePropertyChange("theme", old, theme);
@@ -193,7 +194,6 @@ public class Actions  {
                 }
             }
         }
-
     };
     
     final Action newAction = new AbstractAction("new") {
@@ -258,8 +258,8 @@ public class Actions  {
         for(Sketch.SketchBuffer buffer : sketch.getBuffers()) {
             if(buffer.isDirty()) {
                 try {
-                    Util.p("saving: " + buffer.getFile().getAbsolutePath());
-                    Util.p("text = " + buffer.getText());
+                    //Util.p("saving: " + buffer.getFile().getAbsolutePath());
+                    //Util.p("text = " + buffer.getText());
                     Util.toFile(buffer.getText(), buffer.getFile());
                 } catch (IOException ex) {
                     Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);

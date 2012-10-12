@@ -4,8 +4,13 @@
  */
 package com.joshondesign.arduinox;
 
+import com.joshondesign.arduino.common.Util;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
@@ -46,7 +51,9 @@ public class Start {
                     
                     DefaultSyntaxKit.initKit();
                     Configuration config = DefaultSyntaxKit.getConfig(DefaultSyntaxKit.class);
-                    /*
+                    
+                    KeyboardUtils.setup(config);
+                    /* 
                     //line number gutter
                     config.put("LineNumbers.Foreground", "0xff0000");
                     config.put("LineNumbers.Background", "0xffff00");
