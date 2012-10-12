@@ -1,5 +1,6 @@
 package com.joshondesign.arduinox;
 
+import com.joshondesign.arduino.common.Device;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ public class Sketch {
     private final File dir;
     private SerialPort currentPort = null;
     private Properties props;
+    private Device currentDevice;
 
     Sketch(File sketchDir) throws IOException {
         this.dir = sketchDir;
@@ -81,6 +83,14 @@ public class Sketch {
                 Logger.getLogger(Sketch.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    
+    void setCurrentDevice(Device device) {
+        this.currentDevice = device;
+    }
+    
+    public Device getCurrentDevice() {
+        return this.currentDevice;
     }
     
     

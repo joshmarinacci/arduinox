@@ -79,6 +79,7 @@ public class Actions  {
                         task.setArduinoLibrariesDir(new File("/Users/josh/projects/Arduino.app/Contents/Resources/Java/libraries"));
                         task.setHardwareDir(new File("/Users/josh/projects/Arduino.app/Contents/Resources/Java/hardware/"));
                         task.setUploadPortPath(sketch.getCurrentPort().portName);
+                        task.setDevice(sketch.getCurrentDevice());
                         task.assemble();
                         log("downloading to the device");
                         task.download();

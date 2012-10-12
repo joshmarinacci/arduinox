@@ -4,6 +4,7 @@
  */
 package com.joshondesign.arduinox;
 
+import com.joshondesign.arduino.common.Device;
 import com.joshondesign.arduino.common.Util;
 import gnu.io.CommPortIdentifier;
 import java.beans.PropertyChangeListener;
@@ -25,9 +26,11 @@ public class Global {
     private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
     private Map<Sketch,EditorWindow> windows = new HashMap<>();
     private final List<SerialPort> ports;
+    private final List<Device> devices;
 
     private Global() {
         this.ports = scanForSerialPorts();
+        this.devices = scanForDevices();
     }
     
     
@@ -118,5 +121,60 @@ public class Global {
             }
         }
         return null;
+    }
+
+    private List<Device> scanForDevices() {
+        List<Device> devices  = new ArrayList<>();
+        Device uno = new Device();
+        uno.name = "Arduino Uno";
+        uno.protocol = "arduino";
+        uno.maximum_size = 32256;
+        uno.upload_speed=115200;
+        uno.low_fuses = 0xff;
+        uno.high_fuses=0xde;
+        uno.extended_fuses=0xde;
+        uno.path="optiboot";
+        uno.file="optiboot_atmega328.hex";
+        uno.unlock_bits = 0x3f;
+        uno.lock_bits = 0x0F;
+        uno.mcu="atmega328p";
+        uno.f_cpu="16000000L";
+        uno.core = "arduino";
+        uno.variant = "standard";
+        devices.add(uno);
+        
+        Device boarduino = new Device();
+        boarduino.name = "Boarduino (Deluiminvoa compatible)";
+        boarduino.compatible = uno;
+        devices.add(boarduino);
+        
+
+        Device leonardo = new Device();
+        leonardo.name="Arduino Leonardo";
+        leonardo.protocol="avr109";
+        leonardo.maximum_size=28672;
+        leonardo.upload_speed=57600;
+        leonardo.disable_flushing=true;
+        leonardo.low_fuses=0xff;
+        leonardo.high_fuses=0xd8;
+        leonardo.extended_fuses=0xcb;
+        leonardo.path="caterina";
+        leonardo.file="Caterina-Leonardo.hex";
+        leonardo.unlock_bits=0x3F;
+        leonardo.lock_bits=0x2F;
+        leonardo.mcu="atmega32u4";
+        leonardo.f_cpu="16000000L";
+        leonardo.vid="0x2341";
+        leonardo.pid="0x8036";
+        leonardo.core="arduino";
+        leonardo.variant="leonardo";
+
+        devices.add(leonardo);
+        
+        return devices;
+    }
+    
+    List<Device> getDevices() {
+        return this.devices;
     }
 }

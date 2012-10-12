@@ -1,5 +1,6 @@
 package com.joshondesign.arduinox;
 
+import com.joshondesign.arduino.common.Device;
 import com.joshondesign.arduino.common.Util;
 import com.joshondesign.arduinox.Sketch.SketchBuffer;
 import gnu.io.CommPortIdentifier;
@@ -29,6 +30,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
+import javax.swing.ListCellRenderer;
 import javax.swing.LookAndFeel;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
@@ -139,9 +141,12 @@ public class EditorWindow extends javax.swing.JFrame {
         Action selectAllAction = map.get(DefaultEditorKit.selectAllAction);
         selectAllAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("meta A"));
         selectAll.setAction(selectAllAction);
-        serialportDropdown.setModel(new DefaultComboBoxModel(Global.getGlobal().getPorts().toArray()));
+        Object[] ports = Global.getGlobal().getPorts().toArray();
+        serialportDropdown.setModel(new DefaultComboBoxModel(ports));
         serialportDropdown.setRenderer(new SerialPortComboBoxRenderer());
-        
+        if(ports.length == 0) {
+            serialportDropdown.setEnabled(false);
+        }
         
         
         if(actions.sketch.getCurrentPort() == null) {
@@ -151,6 +156,22 @@ public class EditorWindow extends javax.swing.JFrame {
         }
         serialportDropdown.setSelectedItem(actions.sketch.getCurrentPort());
         
+        
+        
+        deviceDropdown.setModel(new DefaultComboBoxModel(Global.getGlobal().getDevices().toArray()));
+        deviceDropdown.setRenderer(new DefaultListCellRenderer() {
+
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            Component comp = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            if(comp instanceof JLabel && value instanceof Device) {
+                JLabel label = (JLabel) comp;
+                Device device = (Device) value;
+                label.setText(device.name);
+            }
+            return comp;
+            }
+        });
         
         rebuildWindowMenu();
         //register to listen for changes
@@ -299,6 +320,8 @@ public class EditorWindow extends javax.swing.JFrame {
         jSeparator2 = new javax.swing.JToolBar.Separator();
         jLabel1 = new javax.swing.JLabel();
         serialportDropdown = new javax.swing.JComboBox();
+        jLabel2 = new javax.swing.JLabel();
+        deviceDropdown = new javax.swing.JComboBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         newSketchItem = new javax.swing.JMenuItem();
@@ -386,6 +409,17 @@ public class EditorWindow extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(serialportDropdown);
+
+        jLabel2.setText("Device");
+        jToolBar1.add(jLabel2);
+
+        deviceDropdown.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        deviceDropdown.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deviceChanged(evt);
+            }
+        });
+        jToolBar1.add(deviceDropdown);
 
         jMenu1.setText("File");
 
@@ -480,6 +514,12 @@ public class EditorWindow extends javax.swing.JFrame {
         
     }//GEN-LAST:event_serialPortChanged
 
+    private void deviceChanged(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deviceChanged
+        Device device = (Device) deviceDropdown.getSelectedItem();
+        Util.p("chose the device: " + device.name);
+        actions.sketch.setCurrentDevice(device);
+    }//GEN-LAST:event_deviceChanged
+
     /**
      * @param args the command line arguments
      */
@@ -521,10 +561,12 @@ public class EditorWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem copyItem;
     private javax.swing.JMenuItem cutItem;
     private javax.swing.JMenuItem darkThemeItem;
+    private javax.swing.JComboBox deviceDropdown;
     private javax.swing.JMenuItem indentMenuItem;
     private javax.swing.JButton jButton3;
     private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
