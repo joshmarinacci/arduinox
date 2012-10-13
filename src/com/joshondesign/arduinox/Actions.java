@@ -228,7 +228,7 @@ public class Actions  {
         STANDARD_THEME = new ColorTheme();
         STANDARD_THEME.backgroundColor = Color.WHITE;
         LIGHT_THEME = new ColorTheme();
-        LIGHT_THEME.backgroundColor = new Color(240,240,240);
+        LIGHT_THEME.backgroundColor = new Color(255,255,255);
         DARK_THEME = new ColorTheme();
         DARK_THEME.backgroundColor = Color.DARK_GRAY;
         theme = STANDARD_THEME;

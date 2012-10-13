@@ -241,7 +241,7 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
           <SubComponents>
-            <Component class="javax.swing.JEditorPane" name="jEditorPane1">
+            <Component class="javax.swing.JEditorPane" name="helpPane">
               <Properties>
                 <Property name="contentType" type="java.lang.String" value="text/html" noResource="true"/>
                 <Property name="text" type="java.lang.String" value="&lt;html&gt;&#xa;  &lt;head&gt;&#xa;&#xa;  &lt;/head&gt;&#xa;  &lt;body&gt;&#xa;&lt;h3&gt;Help and Info&lt;/h3&gt;&#xa;    &lt;p style=&quot;margin-top: 0&quot;&gt;&#xa;       &lt;b&gt;This&lt;/b&gt; is real help text.&#xa;    &lt;/p&gt;&#xa;  &lt;/body&gt;&#xa;&lt;/html&gt;&#xa;"/>
@@ -292,6 +292,7 @@
         <Component class="javax.swing.JButton" name="jButton3">
           <Properties>
             <Property name="text" type="java.lang.String" value="+"/>
+            <Property name="enabled" type="boolean" value="false"/>
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="verticalTextPosition" type="int" value="3"/>

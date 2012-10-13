@@ -205,6 +205,15 @@ public class EditorWindow extends javax.swing.JFrame {
                 rebuildWindowMenu();
             }
         });
+        
+        
+        try {
+            String helptext = Util.toString(getClass().getResource("resources/cheatsheet.html"));
+            Util.p("content = " + helptext);
+            helpPane.setText(helptext);
+        } catch (IOException ex) {
+            Logger.getLogger(EditorWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void rebuildWindowMenu() {
@@ -335,7 +344,7 @@ public class EditorWindow extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         console = new javax.swing.JTextArea();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jEditorPane1 = new javax.swing.JEditorPane();
+        helpPane = new javax.swing.JEditorPane();
         jToolBar1 = new javax.swing.JToolBar();
         checkButton = new javax.swing.JButton();
         runButton = new javax.swing.JButton();
@@ -387,9 +396,9 @@ public class EditorWindow extends javax.swing.JFrame {
 
         jSplitPane1.setLeftComponent(jSplitPane2);
 
-        jEditorPane1.setContentType("text/html"); // NOI18N
-        jEditorPane1.setText("<html>\n  <head>\n\n  </head>\n  <body>\n<h3>Help and Info</h3>\n    <p style=\"margin-top: 0\">\n       <b>This</b> is real help text.\n    </p>\n  </body>\n</html>\n");
-        jScrollPane2.setViewportView(jEditorPane1);
+        helpPane.setContentType("text/html"); // NOI18N
+        helpPane.setText("<html>\n  <head>\n\n  </head>\n  <body>\n<h3>Help and Info</h3>\n    <p style=\"margin-top: 0\">\n       <b>This</b> is real help text.\n    </p>\n  </body>\n</html>\n");
+        jScrollPane2.setViewportView(helpPane);
 
         jSplitPane1.setRightComponent(jScrollPane2);
 
@@ -413,6 +422,7 @@ public class EditorWindow extends javax.swing.JFrame {
         jToolBar1.add(jSeparator1);
 
         jButton3.setText("+");
+        jButton3.setEnabled(false);
         jButton3.setFocusable(false);
         jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -603,9 +613,9 @@ public class EditorWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem cutItem;
     private javax.swing.JMenuItem darkThemeItem;
     private javax.swing.JComboBox deviceDropdown;
+    private javax.swing.JEditorPane helpPane;
     private javax.swing.JMenuItem indentMenuItem;
     private javax.swing.JButton jButton3;
-    private javax.swing.JEditorPane jEditorPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
