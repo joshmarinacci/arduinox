@@ -181,6 +181,9 @@ public class EditorWindow extends javax.swing.JFrame {
         serialportDropdown.setSelectedItem(actions.sketch.getCurrentPort());
         
         
+        deviceInfoButton.setAction(actions.deviceInfoAction);
+        
+        
         
         deviceDropdown.setModel(new DefaultComboBoxModel(Global.getGlobal().getDevices().toArray()));
         deviceDropdown.setRenderer(new DefaultListCellRenderer() {
@@ -355,6 +358,7 @@ public class EditorWindow extends javax.swing.JFrame {
         serialportDropdown = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
         deviceDropdown = new javax.swing.JComboBox();
+        deviceInfoButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         newSketchItem = new javax.swing.JMenuItem();
@@ -456,6 +460,12 @@ public class EditorWindow extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(deviceDropdown);
+
+        deviceInfoButton.setText("i");
+        deviceInfoButton.setFocusable(false);
+        deviceInfoButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        deviceInfoButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jToolBar1.add(deviceInfoButton);
 
         jMenu1.setText("File");
 
@@ -613,6 +623,7 @@ public class EditorWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem cutItem;
     private javax.swing.JMenuItem darkThemeItem;
     private javax.swing.JComboBox deviceDropdown;
+    private javax.swing.JButton deviceInfoButton;
     private javax.swing.JEditorPane helpPane;
     private javax.swing.JMenuItem indentMenuItem;
     private javax.swing.JButton jButton3;

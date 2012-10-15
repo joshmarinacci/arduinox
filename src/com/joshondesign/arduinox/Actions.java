@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -222,6 +223,18 @@ public class Actions  {
             } catch (IOException ex) {
                 Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+    };
+    
+    final Action deviceInfoAction = new AbstractAction("info") {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Util.p("getting device info for device: " + sketch.getCurrentDevice().name);
+            JFrame frame = new JFrame("Device Info");
+            frame.add(new DeviceInfoPanel(sketch.getCurrentDevice()));
+            frame.pack();
+            frame.setSize(400,250);
+            frame.setVisible(true);
         }
     };
     
