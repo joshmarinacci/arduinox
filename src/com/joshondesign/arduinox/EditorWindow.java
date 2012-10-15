@@ -305,11 +305,13 @@ public class EditorWindow extends javax.swing.JFrame {
             @Override
             public void removeUpdate(DocumentEvent e) {
                 buffer.markDirty();
+                buffer.setText(pane.getText());
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
                 buffer.markDirty();
+                buffer.setText(pane.getText());
             }
         });
         
