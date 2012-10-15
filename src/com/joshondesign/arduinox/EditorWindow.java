@@ -1,5 +1,6 @@
 package com.joshondesign.arduinox;
 
+import com.joshondesign.arduino.common.CompileException;
 import com.joshondesign.arduino.common.Device;
 import com.joshondesign.arduino.common.Util;
 import com.joshondesign.arduinox.Sketch.SketchBuffer;
@@ -91,6 +92,25 @@ public class EditorWindow extends javax.swing.JFrame {
             public void log(String str) {
                 console.setText(console.getText()+str+"\n");
             }
+
+            @Override
+            public void log(Exception ex) {
+                //console.append(null)
+                if(ex instanceof CompileException) {
+                    CompileException cex = (CompileException) ex;
+                    console.append(
+                            ex.getMessage()
+                            + "\n"
+                            + cex.getCompilerMessage()
+                            + "\n"
+                            );
+                } else {
+                    console.setText(console.getText() 
+                            + ex.getMessage()
+                            + "\n"
+                            );
+                }
+            }
         });
 
         actions.pcs.addPropertyChangeListener("fontsize", new PropertyChangeListener() {
@@ -118,7 +138,6 @@ public class EditorWindow extends javax.swing.JFrame {
         Util.p("editor = " + pane);
         List<Action> list = Arrays.asList(pane.getActions());
         Collections.sort(list, new Comparator<Action>() {
-
             @Override
             public int compare(Action o1, Action o2) {
                 return ((String)o1.getValue(Action.NAME)).compareTo((String)o2.getValue(Action.NAME));
@@ -199,6 +218,13 @@ public class EditorWindow extends javax.swing.JFrame {
             return comp;
             }
         });
+        if(actions.sketch.getCurrentDevice() == null) {
+            if(Global.getGlobal().getDevices().size() > 0) {
+                actions.sketch.setCurrentDevice(Global.getGlobal().getDevices().get(0));
+            }
+        }
+        Util.p("current device = " + actions.sketch.getCurrentDevice());
+        deviceDropdown.setSelectedItem(actions.sketch.getCurrentDevice());
         
         rebuildWindowMenu();
         //register to listen for changes

@@ -49,6 +49,7 @@ public class Actions  {
     Action checkAction = new AbstractAction("Check") {
         @Override
         public void actionPerformed(ActionEvent e) {
+            saveBuffers();
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -61,7 +62,8 @@ public class Actions  {
                         task.setDevice(sketch.getCurrentDevice());
                         task.assemble();
                         log("fully assembled");
-                    } catch (IOException ex) {
+                    } catch (Exception ex) {
+                        log(ex);
                         Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
@@ -72,6 +74,7 @@ public class Actions  {
     Action runAction = new AbstractAction("Run") {
         @Override
         public void actionPerformed(ActionEvent e) {
+            saveBuffers();
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -87,7 +90,9 @@ public class Actions  {
                         log("downloading to the device");
                         task.download();
                         log("finished downloading");
-                    } catch (IOException ex) {
+                    } catch (Exception ex) {
+                        log("error during compliation");
+                        log(ex);
                         Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
@@ -260,6 +265,18 @@ public class Actions  {
             }
         });
     }
+    void log(final Exception ex) {
+        Util.p(ex.getMessage());
+        ex.printStackTrace();
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                for(LogListener ll : logListeners) {
+                    ll.log(ex);
+                }
+            }
+        });
+    }
     
     void addLogListener(LogListener listener) {
         this.logListeners.add(listener);
@@ -267,6 +284,7 @@ public class Actions  {
 
     public static interface LogListener {
         public void log(String str);
+        public void log(Exception ex);
     }
     
     private void saveBuffers() {
