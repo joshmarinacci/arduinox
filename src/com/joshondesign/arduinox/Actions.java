@@ -57,8 +57,7 @@ public class Actions  {
                         CompileTask task = new CompileTask();
                         task.setSketchDir(sketch.getDirectory());
                         task.setUserLibrariesDir(new File("/Users/josh/Documents/Arduino/Libraries"));
-                        task.setArduinoLibrariesDir(new File("/Users/josh/projects/Arduino.app/Contents/Resources/Java/libraries"));
-                        task.setHardwareDir(new File("/Users/josh/projects/Arduino.app/Contents/Resources/Java/hardware/"));
+                        task.setArduinoRoot(new File("/Users/josh/projects/Arduino.app/Contents/Resources/Java"));
                         task.setDevice(sketch.getCurrentDevice());
                         task.assemble();
                         log("fully assembled");
@@ -81,8 +80,7 @@ public class Actions  {
                         CompileTask task = new CompileTask();
                         task.setSketchDir(sketch.getDirectory());
                         task.setUserLibrariesDir(new File("/Users/josh/Documents/Arduino/Libraries"));
-                        task.setArduinoLibrariesDir(new File("/Users/josh/projects/Arduino.app/Contents/Resources/Java/libraries"));
-                        task.setHardwareDir(new File("/Users/josh/projects/Arduino.app/Contents/Resources/Java/hardware/"));
+                        task.setArduinoRoot(new File("/Users/josh/projects/Arduino.app/Contents/Resources/Java"));
                         task.setUploadPortPath(sketch.getCurrentPort().portName);
                         task.setDevice(sketch.getCurrentDevice());
                         task.assemble();
