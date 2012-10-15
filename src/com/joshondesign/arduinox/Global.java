@@ -143,9 +143,32 @@ public class Global {
         uno.variant = "standard";
         devices.add(uno);
         
+        
+        
+        Device atmega328 = new Device();
+        atmega328.name="Arduino Duemilanove w/ ATmega328";
+        atmega328.protocol="arduino";
+        atmega328.maximum_size=30720;
+        atmega328.upload_speed=57600;
+        
+        atmega328.low_fuses=0xFF;
+        atmega328.high_fuses=0xDA;
+        
+        atmega328.extended_fuses=0x05;
+        atmega328.path="atmega";
+        atmega328.file="ATmegaBOOT_168_atmega328.hex";
+        atmega328.unlock_bits=0x3F;
+        atmega328.lock_bits=0x0F;
+
+        atmega328.mcu="atmega328p";
+        atmega328.f_cpu="16000000L";
+        atmega328.core="arduino";
+        atmega328.variant="standard";
+        devices.add(atmega328);
+
         Device boarduino = new Device();
-        boarduino.name = "Boarduino (Deluiminvoa compatible)";
-        boarduino.compatible = uno;
+        boarduino.name = "Boarduino (compatible with Diecimila/Duemilanove with 328P)";
+        boarduino.compatible = atmega328;
         devices.add(boarduino);
         
 
