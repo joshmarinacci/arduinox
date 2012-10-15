@@ -223,7 +223,6 @@ public class EditorWindow extends javax.swing.JFrame {
                 actions.sketch.setCurrentDevice(Global.getGlobal().getDevices().get(0));
             }
         }
-        Util.p("current device = " + actions.sketch.getCurrentDevice());
         deviceDropdown.setSelectedItem(actions.sketch.getCurrentDevice());
         
         rebuildWindowMenu();
