@@ -30,6 +30,7 @@ public class Global {
     private final List<Config> configs;
     public Config editConfigStub;
     private Config defaultConfig;
+    private Device extracore;
 
     private Global() {
         this.ports = scanForSerialPorts();
@@ -207,6 +208,32 @@ public class Global {
 
         devices.add(leonardo);
         
+        Device pro5v328 = new Device();
+        pro5v328.name= "Arduino Pro or Pro Mini (5V, 16 MHz) w/ ATmega328";
+        pro5v328.protocol="arduino";
+        pro5v328.maximum_size=30720;
+        pro5v328.upload_speed=57600;
+        pro5v328.low_fuses=0xFF;
+        pro5v328.high_fuses=0xDA;
+        pro5v328.extended_fuses=0x05;
+        pro5v328.path="atmega";
+        pro5v328.file="ATmegaBOOT_168_atmega328.hex";
+        pro5v328.unlock_bits=0x3F;
+        pro5v328.lock_bits=0x0F;
+        pro5v328.mcu="atmega328p";
+        pro5v328.f_cpu="16000000L";
+        pro5v328.core="arduino";
+        pro5v328.variant="standard";
+        
+        devices.add(pro5v328);
+
+        extracore = new Device();
+        extracore.name = "ExtraCore";
+        extracore.compatible = pro5v328;
+        
+        devices.add(extracore);
+        
+        
         return devices;
     }
     
@@ -220,7 +247,15 @@ public class Global {
 
     private List<Config> loadConfigs() {
         List<Config> configs = new ArrayList<>();
-        Config c1 = new Config();
+        Config c1 = new Config() {
+
+            @Override
+            SerialPort getSerialPort() {
+                if(ports.size() == 0) return null;
+                return ports.get(0);
+            }
+            
+        };
         c1.name = "Default";
         c1.device = devices.get(0);
         configs.add(c1);
@@ -233,6 +268,11 @@ public class Global {
         
         editConfigStub = new Config();
         editConfigStub.name = "Edit ...";
+        
+        Config c3 = new Config();
+        c3.name = "Extra Core";
+        c3.device = extracore;
+        configs.add(c3);
         
         return configs;
     }

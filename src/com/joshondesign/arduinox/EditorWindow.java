@@ -2,6 +2,10 @@ package com.joshondesign.arduinox;
 
 import com.joshondesign.arduino.common.CompileException;
 import com.joshondesign.arduino.common.Device;
+import com.joshondesign.arduino.common.MessageConsumer;
+import com.joshondesign.arduino.common.Preferences;
+import com.joshondesign.arduino.common.Serial;
+import com.joshondesign.arduino.common.SerialException;
 import com.joshondesign.arduino.common.Util;
 import com.joshondesign.arduinox.Sketch.SketchBuffer;
 import gnu.io.CommPortIdentifier;
@@ -59,6 +63,8 @@ public class EditorWindow extends javax.swing.JFrame {
     private Actions actions = null;
     private int editorSplitPosition;
     private int masterSplitPosition;
+    private int currentSerialRate;
+    private Serial serial;
 
     public EditorWindow() {
         initComponents();
@@ -188,27 +194,6 @@ public class EditorWindow extends javax.swing.JFrame {
         KeyboardUtils.setup(pane);
         
         
-        
-        /*
-        Object[] ports = Global.getGlobal().getPorts().toArray();
-        serialportDropdown.setModel(new DefaultComboBoxModel(ports));
-        serialportDropdown.setRenderer(new SerialPortComboBoxRenderer());
-        if(ports.length == 0) {
-            serialportDropdown.setEnabled(false);
-        }
-        
-        
-        if(actions.sketch.getCurrentPort() == null) {
-            if(Global.getGlobal().getPorts().size() > 0) {
-                actions.sketch.setCurrentPort(Global.getGlobal().getPorts().get(0));
-            }
-        }
-        serialportDropdown.setSelectedItem(actions.sketch.getCurrentPort());
-        
-        
-        deviceInfoButton.setAction(actions.deviceInfoAction);
-        */
-                
         List<Config> configs = new ArrayList<>(Global.getGlobal().getConfigs());
         configs.add(Global.getGlobal().editConfigStub);
         deviceDropdown.setModel(new DefaultComboBoxModel(configs.toArray()));
@@ -250,6 +235,15 @@ public class EditorWindow extends javax.swing.JFrame {
         } catch (IOException ex) {
             Logger.getLogger(EditorWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        
+        String[] serialRateStrings = {
+          "300","1200","2400","4800","9600","14400",
+          "19200","28800","38400","57600","115200"
+        };
+
+        serialRateCombo.setModel(new DefaultComboBoxModel(serialRateStrings));
+        autoScroll.setSelected(actions.sketch.isAutoScroll());
     }
 
     private void rebuildWindowMenu() {
@@ -382,8 +376,13 @@ public class EditorWindow extends javax.swing.JFrame {
         consoleTabPane = new javax.swing.JTabbedPane();
         jScrollPane1 = new javax.swing.JScrollPane();
         console = new javax.swing.JTextArea();
+        jPanel1 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        serialConsole = new javax.swing.JTextArea();
+        serialActive = new javax.swing.JToggleButton();
+        serialRateCombo = new javax.swing.JComboBox();
+        serialPortLabel = new javax.swing.JLabel();
+        autoScroll = new javax.swing.JCheckBox();
         helpScroll = new javax.swing.JScrollPane();
         helpPane = new javax.swing.JEditorPane();
         jToolBar1 = new javax.swing.JToolBar();
@@ -435,11 +434,61 @@ public class EditorWindow extends javax.swing.JFrame {
 
         consoleTabPane.addTab("Compiler", jScrollPane1);
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane3.setViewportView(jTextArea1);
+        serialConsole.setEditable(false);
+        serialConsole.setColumns(20);
+        serialConsole.setRows(5);
+        jScrollPane3.setViewportView(serialConsole);
 
-        consoleTabPane.addTab("Serial", jScrollPane3);
+        serialActive.setText("Connect");
+        serialActive.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                serialActiveActionPerformed(evt);
+            }
+        });
+
+        serialRateCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+
+        serialPortLabel.setText("serial port");
+
+        autoScroll.setText("autoscroll");
+        autoScroll.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                autoScrollActionPerformed(evt);
+            }
+        });
+
+        org.jdesktop.layout.GroupLayout jPanel1Layout = new org.jdesktop.layout.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(serialRateCombo, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(serialActive)
+                    .add(jPanel1Layout.createSequentialGroup()
+                        .add(6, 6, 6)
+                        .add(serialPortLabel))
+                    .add(autoScroll))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 359, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
+            .add(jPanel1Layout.createSequentialGroup()
+                .add(serialActive)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(serialRateCombo, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(serialPortLabel)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(autoScroll)
+                .addContainerGap())
+        );
+
+        consoleTabPane.addTab("Serial", jPanel1);
 
         editorSplit.setRightComponent(consoleTabPane);
 
@@ -625,6 +674,14 @@ public class EditorWindow extends javax.swing.JFrame {
             frame.setVisible(true);
         } else {
             actions.sketch.setCurrentConfig(config);
+            SerialPort port = config.getSerialPort();
+            if(port == null) {
+                serialPortLabel.setText("");
+                serialActive.setEnabled(false);
+            } else {
+                serialActive.setEnabled(true);
+                serialPortLabel.setText(port.shortName);
+            }
         }
     }//GEN-LAST:event_deviceChanged
 
@@ -651,6 +708,34 @@ public class EditorWindow extends javax.swing.JFrame {
             masterSplit.setDividerLocation(1.0d);
         }
     }//GEN-LAST:event_rightToggleActionPerformed
+
+    private void serialActiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serialActiveActionPerformed
+        SerialPort port = actions.sketch.getCurrentConfig().getSerialPort();
+        if(port != null) {
+            if(!serialActive.isSelected()) {
+                serial.dispose();
+            } else {
+                try {
+                    serial = new Serial(port.portName, 9600, 'N', 8, 1.0f);
+                    serial.addListener(new MessageConsumer() {
+                        @Override
+                        public void message(String s) {
+                            serialConsole.append(s);
+                            if(actions.sketch.isAutoScroll()) {
+                        	serialConsole.setCaretPosition(serialConsole.getDocument().getLength());                                
+                            }
+                        }
+                    });
+                } catch (SerialException ex) {
+                    Logger.getLogger(EditorWindow.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_serialActiveActionPerformed
+
+    private void autoScrollActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoScrollActionPerformed
+        actions.sketch.setAutoScroll(autoScroll.isSelected());
+    }//GEN-LAST:event_autoScrollActionPerformed
 
     /**
      * @param args the command line arguments
@@ -687,6 +772,7 @@ public class EditorWindow extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JCheckBox autoScroll;
     private javax.swing.JButton checkButton;
     private javax.swing.JMenuItem checkMenuItem;
     private javax.swing.JTextArea console;
@@ -706,11 +792,11 @@ public class EditorWindow extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JMenuItem lightThemeItem;
     private javax.swing.JSplitPane masterSplit;
@@ -723,6 +809,10 @@ public class EditorWindow extends javax.swing.JFrame {
     private javax.swing.JButton runButton;
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenuItem selectAll;
+    private javax.swing.JToggleButton serialActive;
+    private javax.swing.JTextArea serialConsole;
+    private javax.swing.JLabel serialPortLabel;
+    private javax.swing.JComboBox serialRateCombo;
     private javax.swing.JMenuItem standardThemeItem;
     private javax.swing.JTabbedPane tabbedPane;
     private javax.swing.JMenuItem undoItem;

@@ -21,5 +21,9 @@ public class Config {
     Device getDevice() {
         return device;
     }
+
+    SerialPort getSerialPort() {
+        return null;
+    }
     
 }

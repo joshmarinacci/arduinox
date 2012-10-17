@@ -22,6 +22,8 @@ public class Sketch {
     private Properties props;
     private Device currentDevice;
     private Config config;
+    private boolean autoScroll = false;
+    private static final String AUTO_SCROLL = "AUTO_SCROLL";
 
     Sketch(File sketchDir) throws IOException {
         this.dir = sketchDir;
@@ -58,11 +60,7 @@ public class Sketch {
             String configName = props.getProperty("CONFIG");
             config = Global.getGlobal().getConfigForName(configName);
         }
-        
-        Util.p("the current serial port = " + currentPort);
-        if(currentPort != null) {
-            Util.p("current port name = " + currentPort.portName);
-        }
+        autoScroll = Boolean.parseBoolean(props.getProperty(AUTO_SCROLL, "false"));
     }
     
     
@@ -114,8 +112,20 @@ public class Sketch {
     Config getCurrentConfig() {
         return this.config;
     }
-    
-    
+
+    void setAutoScroll(boolean selected) {
+        this.autoScroll = selected;
+        this.props.setProperty(AUTO_SCROLL, Boolean.toString(this.autoScroll));
+        try {
+            saveSettings();
+        } catch (IOException ex) {
+            Logger.getLogger(Sketch.class.getName()).log(Level.SEVERE, null, ex);            
+        }
+    }
+
+    boolean isAutoScroll() {
+        return this.autoScroll;
+    }
     
     
     public static class SketchBuffer {
