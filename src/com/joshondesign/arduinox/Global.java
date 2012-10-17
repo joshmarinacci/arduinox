@@ -27,10 +27,14 @@ public class Global {
     private Map<Sketch,EditorWindow> windows = new HashMap<>();
     private final List<SerialPort> ports;
     private final List<Device> devices;
+    private final List<Config> configs;
+    public Config editConfigStub;
+    private Config defaultConfig;
 
     private Global() {
         this.ports = scanForSerialPorts();
         this.devices = scanForDevices();
+        this.configs = loadConfigs();
     }
     
     
@@ -123,6 +127,15 @@ public class Global {
         return null;
     }
 
+    Config getConfigForName(String configName) {
+        for(Config config : this.configs) {
+            if(config.getName().equals(configName)) {
+                return config;
+            }
+        }
+        return null;
+    }
+    
     private List<Device> scanForDevices() {
         List<Device> devices  = new ArrayList<>();
         Device uno = new Device();
@@ -167,7 +180,7 @@ public class Global {
         devices.add(atmega328);
 
         Device boarduino = new Device();
-        boarduino.name = "Boarduino (compatible with Diecimila/Duemilanove with 328P)";
+        boarduino.name = "Boarduino";
         boarduino.compatible = atmega328;
         devices.add(boarduino);
         
@@ -200,4 +213,32 @@ public class Global {
     List<Device> getDevices() {
         return this.devices;
     }
+    
+    List<Config> getConfigs() {
+        return this.configs;
+    }
+
+    private List<Config> loadConfigs() {
+        List<Config> configs = new ArrayList<>();
+        Config c1 = new Config();
+        c1.name = "Default";
+        c1.device = devices.get(0);
+        configs.add(c1);
+        defaultConfig = c1;
+        
+        Config c2 = new Config();
+        c2.name = "Boarduino Project";
+        c2.device = devices.get(1);
+        configs.add(c2);
+        
+        editConfigStub = new Config();
+        editConfigStub.name = "Edit ...";
+        
+        return configs;
+    }
+
+    Config getDefaultConfig() {
+        return defaultConfig;
+    }
+
 }

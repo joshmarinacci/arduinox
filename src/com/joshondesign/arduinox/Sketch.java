@@ -1,15 +1,15 @@
 package com.joshondesign.arduinox;
 
 import com.joshondesign.arduino.common.Device;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import com.joshondesign.arduino.common.Util;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +21,7 @@ public class Sketch {
     private SerialPort currentPort = null;
     private Properties props;
     private Device currentDevice;
+    private Config config;
 
     Sketch(File sketchDir) throws IOException {
         this.dir = sketchDir;
@@ -52,6 +53,10 @@ public class Sketch {
         if(props.containsKey("SERIALPORT")) {
             String portName = props.getProperty("SERIALPORT");
             currentPort = Global.getGlobal().getPortForPath(portName);
+        }
+        if(props.containsKey("CONFIG")) {
+            String configName = props.getProperty("CONFIG");
+            config = Global.getGlobal().getConfigForName(configName);
         }
         
         Util.p("the current serial port = " + currentPort);
@@ -91,6 +96,23 @@ public class Sketch {
     
     public Device getCurrentDevice() {
         return this.currentDevice;
+    }
+
+    void setCurrentConfig(Config config) {
+        this.config = config;
+        setCurrentDevice(config.getDevice());
+        if(this.config != null) {
+            this.props.setProperty("CONFIG", config.getName());
+        }
+        try {
+            saveSettings();
+        } catch (IOException ex) {
+            Logger.getLogger(Sketch.class.getName()).log(Level.SEVERE, null, ex);            
+        }
+    }
+    
+    Config getCurrentConfig() {
+        return this.config;
     }
     
     

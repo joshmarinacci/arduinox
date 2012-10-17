@@ -7,6 +7,7 @@ import com.joshondesign.arduinox.Sketch.SketchBuffer;
 import gnu.io.CommPortIdentifier;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
@@ -28,6 +29,7 @@ import javax.swing.Action;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JEditorPane;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
@@ -36,6 +38,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
 import javax.swing.LookAndFeel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -54,6 +57,8 @@ public class EditorWindow extends javax.swing.JFrame {
     private Font customFont;
     private Map<SketchBuffer,JScrollPane> scrolls = new HashMap<>();
     private Actions actions = null;
+    private int editorSplitPosition;
+    private int masterSplitPosition;
 
     public EditorWindow() {
         initComponents();
@@ -184,6 +189,7 @@ public class EditorWindow extends javax.swing.JFrame {
         
         
         
+        /*
         Object[] ports = Global.getGlobal().getPorts().toArray();
         serialportDropdown.setModel(new DefaultComboBoxModel(ports));
         serialportDropdown.setRenderer(new SerialPortComboBoxRenderer());
@@ -201,29 +207,28 @@ public class EditorWindow extends javax.swing.JFrame {
         
         
         deviceInfoButton.setAction(actions.deviceInfoAction);
-        
-        
-        
-        deviceDropdown.setModel(new DefaultComboBoxModel(Global.getGlobal().getDevices().toArray()));
+        */
+                
+        List<Config> configs = new ArrayList<>(Global.getGlobal().getConfigs());
+        configs.add(Global.getGlobal().editConfigStub);
+        deviceDropdown.setModel(new DefaultComboBoxModel(configs.toArray()));
         deviceDropdown.setRenderer(new DefaultListCellRenderer() {
 
             @Override
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            Component comp = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            if(comp instanceof JLabel && value instanceof Device) {
-                JLabel label = (JLabel) comp;
-                Device device = (Device) value;
-                label.setText(device.name);
-            }
-            return comp;
+                Component comp = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if(comp instanceof JLabel && value instanceof Config) {
+                    JLabel label = (JLabel) comp;
+                    Config config = (Config) value;
+                    label.setText(config.getName());
+                }
+                return comp;
             }
         });
-        if(actions.sketch.getCurrentDevice() == null) {
-            if(Global.getGlobal().getDevices().size() > 0) {
-                actions.sketch.setCurrentDevice(Global.getGlobal().getDevices().get(0));
-            }
+        if(actions.sketch.getCurrentConfig() == null) {
+            actions.sketch.setCurrentConfig(Global.getGlobal().getDefaultConfig());
         }
-        deviceDropdown.setSelectedItem(actions.sketch.getCurrentDevice());
+        deviceDropdown.setSelectedItem(actions.sketch.getCurrentConfig());
         
         rebuildWindowMenu();
         //register to listen for changes
@@ -234,6 +239,9 @@ public class EditorWindow extends javax.swing.JFrame {
             }
         });
         
+        //set sizing so that we can open and close the split pane
+        consoleTabPane.setMinimumSize(new Dimension());
+        helpScroll.setMinimumSize(new Dimension());
         
         try {
             String helptext = Util.toString(getClass().getResource("resources/cheatsheet.html"));
@@ -368,12 +376,15 @@ public class EditorWindow extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jSplitPane1 = new javax.swing.JSplitPane();
-        jSplitPane2 = new javax.swing.JSplitPane();
+        masterSplit = new javax.swing.JSplitPane();
+        editorSplit = new javax.swing.JSplitPane();
         tabbedPane = new javax.swing.JTabbedPane();
+        consoleTabPane = new javax.swing.JTabbedPane();
         jScrollPane1 = new javax.swing.JScrollPane();
         console = new javax.swing.JTextArea();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+        helpScroll = new javax.swing.JScrollPane();
         helpPane = new javax.swing.JEditorPane();
         jToolBar1 = new javax.swing.JToolBar();
         checkButton = new javax.swing.JButton();
@@ -381,11 +392,10 @@ public class EditorWindow extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JToolBar.Separator();
         jButton3 = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
-        jLabel1 = new javax.swing.JLabel();
-        serialportDropdown = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
         deviceDropdown = new javax.swing.JComboBox();
-        deviceInfoButton = new javax.swing.JButton();
+        consoleToggle = new javax.swing.JToggleButton();
+        rightToggle = new javax.swing.JToggleButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         newSketchItem = new javax.swing.JMenuItem();
@@ -411,27 +421,35 @@ public class EditorWindow extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jSplitPane1.setDividerLocation(500);
-        jSplitPane1.setResizeWeight(1.0);
+        masterSplit.setDividerLocation(500);
+        masterSplit.setResizeWeight(1.0);
 
-        jSplitPane2.setDividerLocation(300);
-        jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        jSplitPane2.setResizeWeight(1.0);
-        jSplitPane2.setLeftComponent(tabbedPane);
+        editorSplit.setDividerLocation(200);
+        editorSplit.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        editorSplit.setResizeWeight(1.0);
+        editorSplit.setLeftComponent(tabbedPane);
 
         console.setColumns(20);
         console.setRows(5);
         jScrollPane1.setViewportView(console);
 
-        jSplitPane2.setRightComponent(jScrollPane1);
+        consoleTabPane.addTab("Compiler", jScrollPane1);
 
-        jSplitPane1.setLeftComponent(jSplitPane2);
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jScrollPane3.setViewportView(jTextArea1);
+
+        consoleTabPane.addTab("Serial", jScrollPane3);
+
+        editorSplit.setRightComponent(consoleTabPane);
+
+        masterSplit.setLeftComponent(editorSplit);
 
         helpPane.setContentType("text/html"); // NOI18N
         helpPane.setText("<html>\n  <head>\n\n  </head>\n  <body>\n<h3>Help and Info</h3>\n    <p style=\"margin-top: 0\">\n       <b>This</b> is real help text.\n    </p>\n  </body>\n</html>\n");
-        jScrollPane2.setViewportView(helpPane);
+        helpScroll.setViewportView(helpPane);
 
-        jSplitPane1.setRightComponent(jScrollPane2);
+        masterSplit.setRightComponent(helpScroll);
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
@@ -464,19 +482,6 @@ public class EditorWindow extends javax.swing.JFrame {
         jSeparator2.setPreferredSize(new java.awt.Dimension(11, 40));
         jToolBar1.add(jSeparator2);
 
-        jLabel1.setText("Serial Port");
-        jToolBar1.add(jLabel1);
-
-        serialportDropdown.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        serialportDropdown.setAlignmentX(1.0F);
-        serialportDropdown.setMaximumSize(new java.awt.Dimension(400, 32767));
-        serialportDropdown.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                serialPortChanged(evt);
-            }
-        });
-        jToolBar1.add(serialportDropdown);
-
         jLabel2.setText("Device");
         jToolBar1.add(jLabel2);
 
@@ -488,11 +493,29 @@ public class EditorWindow extends javax.swing.JFrame {
         });
         jToolBar1.add(deviceDropdown);
 
-        deviceInfoButton.setText("i");
-        deviceInfoButton.setFocusable(false);
-        deviceInfoButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        deviceInfoButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(deviceInfoButton);
+        consoleToggle.setSelected(true);
+        consoleToggle.setText("Console");
+        consoleToggle.setFocusable(false);
+        consoleToggle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        consoleToggle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        consoleToggle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                consoleToggleActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(consoleToggle);
+
+        rightToggle.setSelected(true);
+        rightToggle.setText("Sidebar");
+        rightToggle.setFocusable(false);
+        rightToggle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        rightToggle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        rightToggle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rightToggleActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(rightToggle);
 
         jMenu1.setText("File");
 
@@ -578,35 +601,56 @@ public class EditorWindow extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jToolBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .add(jSplitPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 661, Short.MAX_VALUE)
+            .add(masterSplit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 661, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .add(jToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jSplitPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE))
+                .add(masterSplit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void serialPortChanged(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serialPortChanged
-        SerialPort port = (SerialPort) serialportDropdown.getSelectedItem();
-        Util.p("I chose the serial port " + port);
-        actions.sketch.setCurrentPort(port);
-        
-    }//GEN-LAST:event_serialPortChanged
-
     private void deviceChanged(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deviceChanged
-        Device device = (Device) deviceDropdown.getSelectedItem();
-        Util.p("chose the device: " + device.name);
-        actions.sketch.setCurrentDevice(device);
+        Config config = (Config) deviceDropdown.getSelectedItem();
+        if(config == null) return;
+        if(config == Global.getGlobal().editConfigStub) {
+            JFrame frame = new JFrame("Edit Configurations");
+            frame.add(new DeviceChooser());
+            frame.pack();
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+        } else {
+            actions.sketch.setCurrentConfig(config);
+        }
     }//GEN-LAST:event_deviceChanged
 
     private void selectAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_selectAllActionPerformed
+
+    private void consoleToggleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_consoleToggleActionPerformed
+        if(consoleToggle.isSelected()) {
+            editorSplit.setDividerLocation(editorSplitPosition);
+        } else {
+            editorSplitPosition = editorSplit.getDividerLocation();
+            editorSplit.setDividerLocation(1.0d);
+        }
+        
+        
+    }//GEN-LAST:event_consoleToggleActionPerformed
+
+    private void rightToggleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rightToggleActionPerformed
+        if(rightToggle.isSelected()) {
+            masterSplit.setDividerLocation(masterSplitPosition);
+        } else {
+            masterSplitPosition = masterSplit.getDividerLocation();
+            masterSplit.setDividerLocation(1.0d);
+        }
+    }//GEN-LAST:event_rightToggleActionPerformed
 
     /**
      * @param args the command line arguments
@@ -646,37 +690,39 @@ public class EditorWindow extends javax.swing.JFrame {
     private javax.swing.JButton checkButton;
     private javax.swing.JMenuItem checkMenuItem;
     private javax.swing.JTextArea console;
+    private javax.swing.JTabbedPane consoleTabPane;
+    private javax.swing.JToggleButton consoleToggle;
     private javax.swing.JMenuItem copyItem;
     private javax.swing.JMenuItem cutItem;
     private javax.swing.JMenuItem darkThemeItem;
     private javax.swing.JComboBox deviceDropdown;
-    private javax.swing.JButton deviceInfoButton;
+    private javax.swing.JSplitPane editorSplit;
     private javax.swing.JEditorPane helpPane;
+    private javax.swing.JScrollPane helpScroll;
     private javax.swing.JMenuItem indentMenuItem;
     private javax.swing.JButton jButton3;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
-    private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JSplitPane jSplitPane2;
+    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JMenuItem lightThemeItem;
+    private javax.swing.JSplitPane masterSplit;
     private javax.swing.JMenuItem newSketchItem;
     private javax.swing.JMenuItem openSketchItem;
     private javax.swing.JMenuItem pasteItem;
     private javax.swing.JMenuItem quitMenu;
     private javax.swing.JMenuItem redoItem;
+    private javax.swing.JToggleButton rightToggle;
     private javax.swing.JButton runButton;
     private javax.swing.JMenuItem saveMenuItem;
     private javax.swing.JMenuItem selectAll;
-    private javax.swing.JComboBox serialportDropdown;
     private javax.swing.JMenuItem standardThemeItem;
     private javax.swing.JTabbedPane tabbedPane;
     private javax.swing.JMenuItem undoItem;
