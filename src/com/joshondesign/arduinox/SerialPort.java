@@ -4,6 +4,9 @@
  */
 package com.joshondesign.arduinox;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author josh
@@ -11,8 +14,31 @@ package com.joshondesign.arduinox;
 class SerialPort {
     String shortName;
     String portName;
+    private List<PortChange> listeners;
 
     SerialPort() {
+        this.listeners = new ArrayList<>();
+    }
+
+    void lock() {
+        for(PortChange l : listeners) {
+            l.lock();
+        }
+    }
+
+    void unlock() {
+        for(PortChange l : listeners) {
+            l.unlock();
+        }
     }
     
+    
+    public static interface PortChange {
+        public void lock();
+        public void unlock();
+    }
+    
+    public void addListener(PortChange l) {
+        this.listeners.add(l);
+    }
 }

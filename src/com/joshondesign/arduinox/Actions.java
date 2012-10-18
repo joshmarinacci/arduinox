@@ -60,36 +60,42 @@ public class Actions  {
                         task.setUserLibrariesDir(new File("/Users/josh/Documents/Arduino/Libraries"));
                         task.setArduinoRoot(new File("/Users/josh/projects/Arduino.app/Contents/Resources/Java"));
                         task.setDevice(sketch.getCurrentDevice());
-                        task.setOutputListener(new OutputListener() {
-                            @Override
-                            public void log(String string) {
-                                Actions.this.log("==== " + string);
-                            }
-
-                            @Override
-                            public void stdout(String string) {
-                                Actions.this.log(string);
-                            }
-
-                            @Override
-                            public void stderr(String string) {
-                                Actions.this.log("ERROR:" + string);
-                            }
-
-                            @Override
-                            public void exec(String string) {
-                                Actions.this.log(string);
-                            }
-                        });
+                        task.setOutputListener(new CompilerOutput());
                         task.assemble();
                     } catch (Exception ex) {
                         log(ex);
                         Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
+
             }).start();
         }
     };
+                class CompilerOutput implements OutputListener {
+
+                    public CompilerOutput() {
+                    }
+
+                    @Override
+                    public void log(String string) {
+                        Actions.this.log("==== " + string);
+                    }
+
+                    @Override
+                    public void stdout(String string) {
+                        Actions.this.log(string);
+                    }
+
+                    @Override
+                    public void stderr(String string) {
+                        Actions.this.log("ERROR:" + string);
+                    }
+
+                    @Override
+                    public void exec(String string) {
+                        Actions.this.log(string);
+                    }
+                }
     
     Action runAction = new AbstractAction("Run") {
         @Override
@@ -100,16 +106,19 @@ public class Actions  {
                 public void run() {
                     try {
                         log("Compiling");
+                        sketch.getCurrentPort().lock();
                         CompileTask task = new CompileTask();
                         task.setSketchDir(sketch.getDirectory());
                         task.setUserLibrariesDir(new File("/Users/josh/Documents/Arduino/Libraries"));
                         task.setArduinoRoot(new File("/Users/josh/projects/Arduino.app/Contents/Resources/Java"));
                         task.setUploadPortPath(sketch.getCurrentPort().portName);
                         task.setDevice(sketch.getCurrentDevice());
+                        task.setOutputListener(new CompilerOutput());
                         task.assemble();
                         log("downloading to the device");
                         task.download();
                         log("finished downloading");
+                        sketch.getCurrentPort().unlock();
                     } catch (Exception ex) {
                         log("error during compliation");
                         log(ex);
@@ -300,11 +309,6 @@ public class Actions  {
     
     void addLogListener(LogListener listener) {
         this.logListeners.add(listener);
-    }
-
-    public static interface LogListener {
-        public void log(String str);
-        public void log(Exception ex);
     }
     
     private void saveBuffers() {

@@ -55,7 +55,7 @@ import jsyntaxpane.actions.ActionUtils;
  *
  * @author josh
  */
-public class EditorWindow extends javax.swing.JFrame {
+public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortChange {
     
     private List<JEditorPane> editors = new ArrayList<>();
     private Font customFont;
@@ -65,6 +65,7 @@ public class EditorWindow extends javax.swing.JFrame {
     private int masterSplitPosition;
     private int currentSerialRate;
     private Serial serial;
+    private boolean connected;
 
     public EditorWindow() {
         initComponents();
@@ -98,7 +99,7 @@ public class EditorWindow extends javax.swing.JFrame {
         checkButton.addActionListener(actions.checkAction);
         runButton.addActionListener(actions.runAction);
 
-        actions.addLogListener(new Actions.LogListener() {
+        actions.addLogListener(new LogListener() {
             @Override
             public void log(String str) {
                 console.setText(console.getText()+str+"\n");
@@ -176,10 +177,6 @@ public class EditorWindow extends javax.swing.JFrame {
         pasteAction.putValue(Action.NAME, "Paste");
         pasteAction.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("meta V"));        
         pasteItem.setAction(pasteAction);
-        
-        
-        
-        
         
         HashMap<Object, Action> map = createActionTable(pane);
         Action selectAllAction = map.get(DefaultEditorKit.selectAllAction);
@@ -259,6 +256,56 @@ public class EditorWindow extends javax.swing.JFrame {
             action.putValue(Action.NAME, sketch.getName());
             windowMenu.add(action);
         }
+    }
+
+    @Override
+    public void lock() {
+        serialActive.setEnabled(false);
+        serialActive.setText("Uploading...");
+        serialRateCombo.setEnabled(false);
+        if(serial != null) {
+            serial.dispose();
+            serial = null;
+        }
+    }
+
+    @Override
+    public void unlock() {
+        serialActive.setText("Connect");
+        serialActive.setEnabled(true);
+        serialRateCombo.setEnabled(true);
+        if(connected) {
+            connect(actions.sketch.getCurrentPort());
+        }
+    }
+
+    private void disconnect() {
+        connected = false;
+        serialActive.setText("Connect");
+        serialRateCombo.setEnabled(true);
+        serial.dispose();
+    }
+
+    private void connect(SerialPort port) {
+        try {
+            connected = true;
+            serialActive.setText("Disconnect");
+            serialRateCombo.setEnabled(false);
+            serial = new Serial(port.portName, 9600, 'N', 8, 1.0f);
+            serial.addListener(new MessageConsumer() {
+                @Override
+                public void message(String s) {
+                    serialConsole.append(s);
+                    if(actions.sketch.isAutoScroll()) {
+                        serialConsole.setCaretPosition(serialConsole.getDocument().getLength());                                
+                    }
+                }
+            });
+        } catch (SerialException ex) {
+            Logger.getLogger(EditorWindow.class.getName()).log(Level.SEVERE, null, ex);
+            serialActive.setText("Connect");
+        }
+
     }
     
     
@@ -679,6 +726,7 @@ public class EditorWindow extends javax.swing.JFrame {
                 serialPortLabel.setText("");
                 serialActive.setEnabled(false);
             } else {
+                port.addListener(this);
                 serialActive.setEnabled(true);
                 serialPortLabel.setText(port.shortName);
             }
@@ -713,22 +761,9 @@ public class EditorWindow extends javax.swing.JFrame {
         SerialPort port = actions.sketch.getCurrentConfig().getSerialPort();
         if(port != null) {
             if(!serialActive.isSelected()) {
-                serial.dispose();
+                disconnect();
             } else {
-                try {
-                    serial = new Serial(port.portName, 9600, 'N', 8, 1.0f);
-                    serial.addListener(new MessageConsumer() {
-                        @Override
-                        public void message(String s) {
-                            serialConsole.append(s);
-                            if(actions.sketch.isAutoScroll()) {
-                        	serialConsole.setCaretPosition(serialConsole.getDocument().getLength());                                
-                            }
-                        }
-                    });
-                } catch (SerialException ex) {
-                    Logger.getLogger(EditorWindow.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                connect(port);
             }
         }
     }//GEN-LAST:event_serialActiveActionPerformed

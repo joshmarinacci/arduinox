@@ -256,7 +256,7 @@ public class Global {
             }
             
         };
-        c1.name = "Default";
+        c1.name = "Default: auto";
         c1.device = devices.get(0);
         configs.add(c1);
         defaultConfig = c1;
@@ -269,8 +269,16 @@ public class Global {
         editConfigStub = new Config();
         editConfigStub.name = "Edit ...";
         
-        Config c3 = new Config();
-        c3.name = "Extra Core";
+        Config c3 = new Config() {
+
+            @Override
+            SerialPort getSerialPort() {
+                if(ports.size() == 0) return null;
+                return ports.get(0);
+            }
+            
+        };
+        c3.name = "Extra Core: auto";
         c3.device = extracore;
         configs.add(c3);
         
