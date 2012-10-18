@@ -1,6 +1,7 @@
 package com.joshondesign.arduinox;
 
 import com.joshondesign.arduino.common.CompileTask;
+import com.joshondesign.arduino.common.OutputListener;
 import com.joshondesign.arduino.common.Util;
 import com.joshondesign.arduinox.Sketch.SketchBuffer;
 import java.awt.Color;
@@ -54,14 +55,33 @@ public class Actions  {
                 @Override
                 public void run() {
                     try {
-                        log("the other check");
                         CompileTask task = new CompileTask();
                         task.setSketchDir(sketch.getDirectory());
                         task.setUserLibrariesDir(new File("/Users/josh/Documents/Arduino/Libraries"));
                         task.setArduinoRoot(new File("/Users/josh/projects/Arduino.app/Contents/Resources/Java"));
                         task.setDevice(sketch.getCurrentDevice());
+                        task.setOutputListener(new OutputListener() {
+                            @Override
+                            public void log(String string) {
+                                Actions.this.log("==== " + string);
+                            }
+
+                            @Override
+                            public void stdout(String string) {
+                                Actions.this.log(string);
+                            }
+
+                            @Override
+                            public void stderr(String string) {
+                                Actions.this.log("ERROR:" + string);
+                            }
+
+                            @Override
+                            public void exec(String string) {
+                                Actions.this.log(string);
+                            }
+                        });
                         task.assemble();
-                        log("fully assembled");
                     } catch (Exception ex) {
                         log(ex);
                         Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);

@@ -52,13 +52,7 @@ public class Start {
                     DefaultSyntaxKit.initKit();
                     Configuration config = DefaultSyntaxKit.getConfig(DefaultSyntaxKit.class);
                     
-                    KeyboardUtils.setup(config);
-                    /* 
-                    //line number gutter
-                    config.put("LineNumbers.Foreground", "0xff0000");
-                    config.put("LineNumbers.Background", "0xffff00");
-                    config.put("LineNumbers.CurrentBack","0xff00ff");
-                    
+                    /*
                     config.put("CaretColor","0x00ff00"); //color of the blinking cursor
                     config.put("PairMarker.Color","0x000000"); //paren matching
                     config.put("SelectionColor","0x00ffff"); //actual selection
