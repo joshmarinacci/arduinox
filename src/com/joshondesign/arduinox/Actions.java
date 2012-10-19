@@ -58,7 +58,7 @@ public class Actions  {
                         CompileTask task = new CompileTask();
                         task.setSketchDir(sketch.getDirectory());
                         task.setUserLibrariesDir(new File("/Users/josh/Documents/Arduino/Libraries"));
-                        task.setArduinoRoot(new File("/Users/josh/projects/Arduino.app/Contents/Resources/Java"));
+                        task.setArduinoRoot(new File(Global.getGlobal().getArduinoDir(),"Contents/Resources/Java"));
                         task.setDevice(sketch.getCurrentDevice());
                         task.setOutputListener(new CompilerOutput());
                         task.assemble();

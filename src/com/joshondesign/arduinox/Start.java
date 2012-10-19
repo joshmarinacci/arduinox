@@ -13,7 +13,12 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -37,7 +42,6 @@ public class Start {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                try {
                     try {
                         for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                             if ("Nimbus".equals(info.getName())) {
@@ -61,21 +65,39 @@ public class Start {
                     
                     
                     Global global = Global.getGlobal();
+                    if(global.getArduinoDir() == null) {
+                        JDialog dialog = new JDialog();
+                        JPanel panel = new JPanel();
+                        SelectIDEDialog p = new SelectIDEDialog();
+                        panel.add(p);
+                        dialog.add(panel);
+                        dialog.pack();
+                        dialog.setModal(true);
+                        dialog.setVisible(true);
+                    } else {
+                        openLastSketch();
+                    }
                     
-                    File sketchDir = new File("/Users/josh/Documents/Arduino/Blink");
-                    Sketch sketch  = new Sketch(sketchDir);
-                    global.addSketch(sketch);
-                    
-                    Actions actions = new Actions(sketch);
-                    EditorWindow frame = new EditorWindow(actions);
-                    global.setWindowForSketch(sketch, frame);
-                    frame.pack();
-                    frame.setSize(800,600);
-                    frame.setVisible(true);
-                } catch (IOException ex) {
-                    Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
-                }
             }
+
         });
+    }
+    public static void openLastSketch() {
+        try {
+            Global global = Global.getGlobal();
+            File sketchDir = new File("/Users/josh/Documents/Arduino/Blink");
+            Sketch sketch  = new Sketch(sketchDir);
+            global.addSketch(sketch);
+
+            Actions actions = new Actions(sketch);
+            EditorWindow frame = new EditorWindow(actions);
+            global.setWindowForSketch(sketch, frame);
+            frame.pack();
+            frame.setSize(800,600);
+            frame.setVisible(true);
+        } catch (IOException ex) {
+            Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 }

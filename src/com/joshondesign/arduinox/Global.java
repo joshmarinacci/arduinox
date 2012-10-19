@@ -9,12 +9,20 @@ import com.joshondesign.arduino.common.Util;
 import gnu.io.CommPortIdentifier;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -31,11 +39,14 @@ public class Global {
     public Config editConfigStub;
     private Config defaultConfig;
     private Device extracore;
+    private File arduinoDir;
+    private String ARDUINO_IDE_PATH = "ARDUINO_IDE_PATH";
 
     private Global() {
         this.ports = scanForSerialPorts();
         this.devices = scanForDevices();
         this.configs = loadConfigs();
+        loadSettings();
     }
     
     
@@ -287,6 +298,37 @@ public class Global {
 
     Config getDefaultConfig() {
         return defaultConfig;
+    }
+
+    File getArduinoDir() {
+        return arduinoDir;
+    }
+
+    void setArduinoDir(File arduinoPath) {
+        this.arduinoDir = arduinoPath;
+        saveSettings();
+    }
+
+    private void saveSettings() {
+        try {
+            Properties props = new Properties();
+            props.setProperty(ARDUINO_IDE_PATH, this.arduinoDir.getAbsolutePath());
+            props.storeToXML(new FileOutputStream("settings.xml"), "ArduinoX Settings");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void loadSettings() {
+        try {
+            Properties props = new Properties();
+            props.loadFromXML(new FileInputStream("settings.xml"));
+            if(props.containsKey(ARDUINO_IDE_PATH)) {
+                this.arduinoDir = new File(props.getProperty(ARDUINO_IDE_PATH));
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
 }
