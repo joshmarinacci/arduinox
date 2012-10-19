@@ -71,6 +71,10 @@ public class Actions  {
             }).start();
         }
     };
+
+    ColorTheme getCurrentTheme() {
+        return this.theme;
+    }
                 class CompilerOutput implements OutputListener {
 
                     public CompilerOutput() {

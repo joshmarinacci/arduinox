@@ -9,7 +9,6 @@ import com.joshondesign.arduino.common.SerialException;
 import com.joshondesign.arduino.common.Util;
 import com.joshondesign.arduinox.Sketch.SketchBuffer;
 import gnu.io.CommPortIdentifier;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -145,6 +144,10 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
                 }
             }
         });
+        
+        for(JEditorPane pane : editors) {
+            pane.setBackground(actions.getCurrentTheme().backgroundColor);
+        }
         
         JEditorPane pane = editors.get(0);       
         Util.p("editor = " + pane);
@@ -436,8 +439,6 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         checkButton = new javax.swing.JButton();
         runButton = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
-        jButton3 = new javax.swing.JButton();
-        jSeparator2 = new javax.swing.JToolBar.Separator();
         jLabel2 = new javax.swing.JLabel();
         deviceDropdown = new javax.swing.JComboBox();
         consoleToggle = new javax.swing.JToggleButton();
@@ -551,12 +552,14 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         jToolBar1.setRollover(true);
 
         checkButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/joshondesign/arduinox/resources/noun_project_1307.png"))); // NOI18N
+        checkButton.setText("Build");
         checkButton.setFocusable(false);
         checkButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         checkButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         jToolBar1.add(checkButton);
 
         runButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/joshondesign/arduinox/resources/noun_project_2873.png"))); // NOI18N
+        runButton.setText("Build & Run");
         runButton.setFocusable(false);
         runButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         runButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -565,18 +568,6 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         jSeparator1.setMaximumSize(new java.awt.Dimension(40, 2147483647));
         jSeparator1.setMinimumSize(new java.awt.Dimension(10, 1));
         jToolBar1.add(jSeparator1);
-
-        jButton3.setText("+");
-        jButton3.setEnabled(false);
-        jButton3.setFocusable(false);
-        jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton3);
-
-        jSeparator2.setMaximumSize(new java.awt.Dimension(40, 2147483647));
-        jSeparator2.setMinimumSize(new java.awt.Dimension(40, 1));
-        jSeparator2.setPreferredSize(new java.awt.Dimension(11, 40));
-        jToolBar1.add(jSeparator2);
 
         jLabel2.setText("Device");
         jToolBar1.add(jLabel2);
@@ -589,6 +580,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         });
         jToolBar1.add(deviceDropdown);
 
+        consoleToggle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/joshondesign/arduinox/resources/consoleicon.png"))); // NOI18N
         consoleToggle.setSelected(true);
         consoleToggle.setText("Console");
         consoleToggle.setFocusable(false);
@@ -601,6 +593,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         });
         jToolBar1.add(consoleToggle);
 
+        rightToggle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/joshondesign/arduinox/resources/sidebaricon.png"))); // NOI18N
         rightToggle.setSelected(true);
         rightToggle.setText("Sidebar");
         rightToggle.setFocusable(false);
@@ -704,7 +697,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
             .add(layout.createSequentialGroup()
                 .add(jToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(masterSplit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE))
+                .add(masterSplit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE))
         );
 
         pack();
@@ -821,7 +814,6 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     private javax.swing.JEditorPane helpPane;
     private javax.swing.JScrollPane helpScroll;
     private javax.swing.JMenuItem indentMenuItem;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -831,7 +823,6 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JToolBar.Separator jSeparator1;
-    private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JMenuItem lightThemeItem;
     private javax.swing.JSplitPane masterSplit;
