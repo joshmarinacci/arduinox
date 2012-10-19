@@ -81,20 +81,12 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         
         initComponents();
         
-        newSketchItem.addActionListener(actions.newAction);
-        openSketchItem.addActionListener(actions.openAction);
-        saveMenuItem.addActionListener(actions.saveAction);
-        checkMenuItem.addActionListener(actions.checkAction);
-        quitMenu.addActionListener(actions.quitAction);
-        zoomInItem.addActionListener(actions.zoomInAction);
-        zoomOutItem.addActionListener(actions.zoomOutAction);
-        standardThemeItem.addActionListener(actions.switchStandardTheme);
-        lightThemeItem.addActionListener(actions.switchLightTheme);
-        darkThemeItem.addActionListener(actions.switchDarkTheme);
+        setupMenu();
         
         for(Sketch.SketchBuffer buffer : actions.sketch.getBuffers()) {
             createNewTab(tabbedPane,buffer);
         }
+        //setup toolbar
         checkButton.addActionListener(actions.checkAction);
         runButton.addActionListener(actions.runAction);
 
@@ -150,7 +142,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         }
         
         JEditorPane pane = editors.get(0);       
-        Util.p("editor = " + pane);
+        /*
         List<Action> list = Arrays.asList(pane.getActions());
         Collections.sort(list, new Comparator<Action>() {
             @Override
@@ -162,6 +154,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         for(Action a : list) {
             Util.p("action = " + a.getValue(Action.NAME) + "   shortcut = " + a.getValue(Action.ACCELERATOR_KEY) );
         }
+        * */
         
         
         //fix up the actions. this should eventually move to some new location
@@ -194,26 +187,31 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         KeyboardUtils.setup(pane);
         
         
-        List<Config> configs = new ArrayList<>(Global.getGlobal().getConfigs());
-        configs.add(Global.getGlobal().editConfigStub);
-        deviceDropdown.setModel(new DefaultComboBoxModel(configs.toArray()));
-        deviceDropdown.setRenderer(new DefaultListCellRenderer() {
-
+        List<Device> boards = new ArrayList<>(Global.getGlobal().getDevices());
+        boardDropdown.setModel(new DefaultComboBoxModel(boards.toArray()));
+        boardDropdown.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
                 Component comp = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if(comp instanceof JLabel && value instanceof Config) {
+                if(comp instanceof JLabel && value instanceof Device) {
                     JLabel label = (JLabel) comp;
-                    Config config = (Config) value;
-                    label.setText(config.getName());
+                    Device device = (Device) value;
+                    label.setText(device.getName());
                 }
                 return comp;
             }
         });
-        if(actions.sketch.getCurrentConfig() == null) {
-            actions.sketch.setCurrentConfig(Global.getGlobal().getDefaultConfig());
+        if(actions.sketch.getCurrentDevice() == null) {
+            actions.sketch.setCurrentDevice(Global.getGlobal().getDevices().get(0));
         }
-        deviceDropdown.setSelectedItem(actions.sketch.getCurrentConfig());
+        boardDropdown.setSelectedItem(actions.sketch.getCurrentDevice());
+        
+        List<SerialPort> ports = Global.getGlobal().getPorts();
+        portDropdown.setModel(new DefaultComboBoxModel(ports.toArray()));
+        portDropdown.setRenderer(new SerialPortComboBoxRenderer());
+        if(actions.sketch.getCurrentPort() == null && !Global.getGlobal().getPorts().isEmpty()) {
+            actions.sketch.setCurrentPort(Global.getGlobal().getPorts().get(0));
+        }
         
         rebuildWindowMenu();
         //register to listen for changes
@@ -230,7 +228,6 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         
         try {
             String helptext = Util.toString(getClass().getResource("resources/cheatsheet.html"));
-            Util.p("content = " + helptext);
             helpPane.setText(helptext);
         } catch (IOException ex) {
             Logger.getLogger(EditorWindow.class.getName()).log(Level.SEVERE, null, ex);
@@ -309,6 +306,19 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
             serialActive.setText("Connect");
         }
 
+    }
+
+    private void setupMenu() {
+        newSketchItem.addActionListener(actions.newAction);
+        openSketchItem.addActionListener(actions.openAction);
+        saveMenuItem.addActionListener(actions.saveAction);
+        checkMenuItem.addActionListener(actions.checkAction);
+        quitMenu.addActionListener(actions.quitAction);
+        zoomInItem.addActionListener(actions.zoomInAction);
+        zoomOutItem.addActionListener(actions.zoomOutAction);
+        standardThemeItem.addActionListener(actions.switchStandardTheme);
+        lightThemeItem.addActionListener(actions.switchLightTheme);
+        darkThemeItem.addActionListener(actions.switchDarkTheme);
     }
     
     
@@ -440,7 +450,9 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         runButton = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
         jLabel2 = new javax.swing.JLabel();
-        deviceDropdown = new javax.swing.JComboBox();
+        boardDropdown = new javax.swing.JComboBox();
+        jLabel1 = new javax.swing.JLabel();
+        portDropdown = new javax.swing.JComboBox();
         consoleToggle = new javax.swing.JToggleButton();
         rightToggle = new javax.swing.JToggleButton();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -531,7 +543,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
                 .add(serialRateCombo, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(serialPortLabel)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 51, Short.MAX_VALUE)
                 .add(autoScroll)
                 .addContainerGap())
         );
@@ -569,16 +581,22 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         jSeparator1.setMinimumSize(new java.awt.Dimension(10, 1));
         jToolBar1.add(jSeparator1);
 
-        jLabel2.setText("Device");
+        jLabel2.setText("Board");
         jToolBar1.add(jLabel2);
 
-        deviceDropdown.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        deviceDropdown.addActionListener(new java.awt.event.ActionListener() {
+        boardDropdown.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        boardDropdown.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deviceChanged(evt);
             }
         });
-        jToolBar1.add(deviceDropdown);
+        jToolBar1.add(boardDropdown);
+
+        jLabel1.setText("Port");
+        jToolBar1.add(jLabel1);
+
+        portDropdown.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jToolBar1.add(portDropdown);
 
         consoleToggle.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/joshondesign/arduinox/resources/consoleicon.png"))); // NOI18N
         consoleToggle.setSelected(true);
@@ -704,26 +722,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     }// </editor-fold>//GEN-END:initComponents
 
     private void deviceChanged(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deviceChanged
-        Config config = (Config) deviceDropdown.getSelectedItem();
-        if(config == null) return;
-        if(config == Global.getGlobal().editConfigStub) {
-            JFrame frame = new JFrame("Edit Configurations");
-            frame.add(new DeviceChooser());
-            frame.pack();
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
-        } else {
-            actions.sketch.setCurrentConfig(config);
-            SerialPort port = config.getSerialPort();
-            if(port == null) {
-                serialPortLabel.setText("");
-                serialActive.setEnabled(false);
-            } else {
-                port.addListener(this);
-                serialActive.setEnabled(true);
-                serialPortLabel.setText(port.shortName);
-            }
-        }
+        actions.sketch.setCurrentDevice((Device)boardDropdown.getSelectedItem());
     }//GEN-LAST:event_deviceChanged
 
     private void selectAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectAllActionPerformed
@@ -801,6 +800,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox autoScroll;
+    private javax.swing.JComboBox boardDropdown;
     private javax.swing.JButton checkButton;
     private javax.swing.JMenuItem checkMenuItem;
     private javax.swing.JTextArea console;
@@ -809,11 +809,11 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     private javax.swing.JMenuItem copyItem;
     private javax.swing.JMenuItem cutItem;
     private javax.swing.JMenuItem darkThemeItem;
-    private javax.swing.JComboBox deviceDropdown;
     private javax.swing.JSplitPane editorSplit;
     private javax.swing.JEditorPane helpPane;
     private javax.swing.JScrollPane helpScroll;
     private javax.swing.JMenuItem indentMenuItem;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
@@ -829,6 +829,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     private javax.swing.JMenuItem newSketchItem;
     private javax.swing.JMenuItem openSketchItem;
     private javax.swing.JMenuItem pasteItem;
+    private javax.swing.JComboBox portDropdown;
     private javax.swing.JMenuItem quitMenu;
     private javax.swing.JMenuItem redoItem;
     private javax.swing.JToggleButton rightToggle;

@@ -331,4 +331,11 @@ public class Global {
         }
     }
 
+    Device getDeviceForName(String deviceName) {
+        for(Device d : devices) {
+            if(d.getName().equals(deviceName)) return d;
+        }
+        return null;
+    }
+
 }

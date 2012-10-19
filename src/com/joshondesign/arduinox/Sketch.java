@@ -24,6 +24,7 @@ public class Sketch {
     private Config config;
     private boolean autoScroll = false;
     private static final String AUTO_SCROLL = "AUTO_SCROLL";
+    private static final String DEVICE_KEY = "DEVICE";
 
     Sketch(File sketchDir) throws IOException {
         this.dir = sketchDir;
@@ -56,9 +57,9 @@ public class Sketch {
             String portName = props.getProperty("SERIALPORT");
             currentPort = Global.getGlobal().getPortForPath(portName);
         }
-        if(props.containsKey("CONFIG")) {
-            String configName = props.getProperty("CONFIG");
-            config = Global.getGlobal().getConfigForName(configName);
+        if(props.containsKey(DEVICE_KEY)) {
+            String deviceName = props.getProperty(DEVICE_KEY);
+            currentDevice = Global.getGlobal().getDeviceForName(deviceName);
         }
         autoScroll = Boolean.parseBoolean(props.getProperty(AUTO_SCROLL, "false"));
     }
@@ -90,6 +91,14 @@ public class Sketch {
     
     void setCurrentDevice(Device device) {
         this.currentDevice = device;
+        if(this.currentDevice != null) {
+            this.props.setProperty(DEVICE_KEY, currentDevice.getName());
+            try {
+                saveSettings();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
     
     public Device getCurrentDevice() {
