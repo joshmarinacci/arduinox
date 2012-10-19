@@ -41,6 +41,16 @@ public class Global {
     private Device extracore;
     private File arduinoDir;
     private String ARDUINO_IDE_PATH = "ARDUINO_IDE_PATH";
+    public static final int SERIAL_RATE_INTS[] = {
+        300,1200,2400,4800,9600,14400,
+        19200,28800,38400,57600,115200
+    };
+    
+    public static final String SERIAL_RATE_STRINGS[] = {
+        "300","1200","2400","4800","9600","14400",
+        "19200","28800","38400","57600","115200"
+    };
+
 
     private Global() {
         this.ports = scanForSerialPorts();

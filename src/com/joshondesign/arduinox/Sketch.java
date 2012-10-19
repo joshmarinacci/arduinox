@@ -25,6 +25,8 @@ public class Sketch {
     private boolean autoScroll = false;
     private static final String AUTO_SCROLL = "AUTO_SCROLL";
     private static final String DEVICE_KEY = "DEVICE";
+    private int serialRate = 9600;
+    private String SERIAL_RATE_KEY = "SERIAL_RATE";
 
     Sketch(File sketchDir) throws IOException {
         this.dir = sketchDir;
@@ -61,16 +63,25 @@ public class Sketch {
             String deviceName = props.getProperty(DEVICE_KEY);
             currentDevice = Global.getGlobal().getDeviceForName(deviceName);
         }
+        if(props.containsKey(SERIAL_RATE_KEY)) {
+            String rate = props.getProperty(SERIAL_RATE_KEY);
+            serialRate = Integer.parseInt(rate);
+        }
         autoScroll = Boolean.parseBoolean(props.getProperty(AUTO_SCROLL, "false"));
     }
     
     
     
-    public void saveSettings() throws IOException {
-        File propsFile = new File(dir,"settings.properties");
-        props.store(new FileWriter(propsFile), "");
-        Util.p("saved settings to : " + propsFile.getAbsolutePath());
-        Util.p("serial port = " + props.getProperty("SERIALPORT"));
+    public void saveSettings() {
+        try {
+            File propsFile = new File(dir,"settings.properties");
+            props.store(new FileWriter(propsFile), "");
+            Util.p("saved settings to : " + propsFile.getAbsolutePath());
+            Util.p("serial port = " + props.getProperty("SERIALPORT"));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            Logger.getLogger(Sketch.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     SerialPort getCurrentPort() {
@@ -81,11 +92,7 @@ public class Sketch {
         this.currentPort = port;
         if(this.currentPort != null) {
             this.props.setProperty("SERIALPORT", currentPort.portName);
-            try {
-                saveSettings();
-            } catch (IOException ex) {
-                Logger.getLogger(Sketch.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            saveSettings();
         }
     }
     
@@ -93,11 +100,7 @@ public class Sketch {
         this.currentDevice = device;
         if(this.currentDevice != null) {
             this.props.setProperty(DEVICE_KEY, currentDevice.getName());
-            try {
-                saveSettings();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+            saveSettings();
         }
     }
     
@@ -111,11 +114,7 @@ public class Sketch {
         if(this.config != null) {
             this.props.setProperty("CONFIG", config.getName());
         }
-        try {
-            saveSettings();
-        } catch (IOException ex) {
-            Logger.getLogger(Sketch.class.getName()).log(Level.SEVERE, null, ex);            
-        }
+        saveSettings();
     }
     
     Config getCurrentConfig() {
@@ -125,17 +124,22 @@ public class Sketch {
     void setAutoScroll(boolean selected) {
         this.autoScroll = selected;
         this.props.setProperty(AUTO_SCROLL, Boolean.toString(this.autoScroll));
-        try {
-            saveSettings();
-        } catch (IOException ex) {
-            Logger.getLogger(Sketch.class.getName()).log(Level.SEVERE, null, ex);            
-        }
+        saveSettings();
     }
 
     boolean isAutoScroll() {
         return this.autoScroll;
     }
-    
+
+    void setSerialRate(int i) {
+        serialRate = i;
+        this.props.setProperty(SERIAL_RATE_KEY, ""+serialRate);
+        saveSettings();
+    }
+
+    int getSerialRate() {
+        return this.serialRate;
+    }    
     
     public static class SketchBuffer {
         private final File file;

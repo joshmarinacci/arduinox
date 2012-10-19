@@ -234,12 +234,15 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         }
         
         
-        String[] serialRateStrings = {
-          "300","1200","2400","4800","9600","14400",
-          "19200","28800","38400","57600","115200"
-        };
 
-        serialRateCombo.setModel(new DefaultComboBoxModel(serialRateStrings));
+        serialRateCombo.setModel(new DefaultComboBoxModel(Global.SERIAL_RATE_STRINGS));
+        try {
+        int rate = actions.sketch.getSerialRate();
+        int n = Arrays.binarySearch(Global.SERIAL_RATE_INTS, rate);
+        serialRateCombo.setSelectedIndex(n);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         autoScroll.setSelected(actions.sketch.isAutoScroll());
     }
 
@@ -507,6 +510,11 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         });
 
         serialRateCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        serialRateCombo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                serialRateComboActionPerformed(evt);
+            }
+        });
 
         serialPortLabel.setText("serial port");
 
@@ -763,6 +771,10 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     private void autoScrollActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoScrollActionPerformed
         actions.sketch.setAutoScroll(autoScroll.isSelected());
     }//GEN-LAST:event_autoScrollActionPerformed
+
+    private void serialRateComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serialRateComboActionPerformed
+        actions.sketch.setSerialRate(Global.SERIAL_RATE_INTS[serialRateCombo.getSelectedIndex()]);
+    }//GEN-LAST:event_serialRateComboActionPerformed
 
     /**
      * @param args the command line arguments

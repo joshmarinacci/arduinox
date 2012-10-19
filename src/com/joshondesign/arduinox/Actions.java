@@ -328,11 +328,7 @@ public class Actions  {
                 buffer.markClean();
             }
         }
-        try {
-            sketch.saveSettings();
-        } catch (IOException ex) {
-            Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        sketch.saveSettings();
     }
     
     private void quit() {
