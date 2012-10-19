@@ -244,6 +244,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
             ex.printStackTrace();
         }
         autoScroll.setSelected(actions.sketch.isAutoScroll());
+        
     }
 
     private void rebuildWindowMenu() {
@@ -322,6 +323,40 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         standardThemeItem.addActionListener(actions.switchStandardTheme);
         lightThemeItem.addActionListener(actions.switchLightTheme);
         darkThemeItem.addActionListener(actions.switchDarkTheme);
+    }
+
+    void resetPosition() {
+        Sketch sketch = actions.sketch;
+        int width = sketch.getIntSetting("window.width",800);
+        int height = sketch.getIntSetting("window.height", 600);
+        this.setSize(width, height);
+
+        consoleToggle.setSelected(sketch.getBooleanSetting("window.split.editor.open",true));
+        rightToggle.setSelected(sketch.getBooleanSetting("window.split.sidebar.open",true));
+        editorSplitPosition = sketch.getIntSetting("window.split.editor", 300);
+        masterSplitPosition = sketch.getIntSetting("window.split.sidebar", 550);
+        this.setVisible(true);
+        if(consoleToggle.isSelected()) {
+            editorSplit.setDividerLocation(editorSplitPosition);
+        } else {
+            editorSplit.setDividerLocation(1.0d);
+        }
+        if(rightToggle.isSelected()) {
+            masterSplit.setDividerLocation(masterSplitPosition);
+        } else {
+            masterSplit.setDividerLocation(1.0d);
+        }
+    }
+
+    void shutdown() {
+        Sketch sketch = actions.sketch;
+        sketch.setIntSetting("window.width",getWidth());
+        sketch.setIntSetting("window.height",getHeight());
+        sketch.setIntSetting("window.split.sidebar", masterSplitPosition);
+        sketch.setIntSetting("window.split.editor", editorSplitPosition);
+        sketch.setBooleanSetting("window.split.editor.open",consoleToggle.isSelected());
+        sketch.setBooleanSetting("window.split.sidebar.open",rightToggle.isSelected());
+        actions.sketch.saveSettings();
     }
     
     

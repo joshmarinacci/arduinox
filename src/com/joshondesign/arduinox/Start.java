@@ -93,8 +93,7 @@ public class Start {
             EditorWindow frame = new EditorWindow(actions);
             global.setWindowForSketch(sketch, frame);
             frame.pack();
-            frame.setSize(800,600);
-            frame.setVisible(true);
+            frame.resetPosition();
         } catch (IOException ex) {
             Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
         }

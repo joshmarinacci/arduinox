@@ -140,6 +140,22 @@ public class Sketch {
     int getSerialRate() {
         return this.serialRate;
     }    
+
+    int getIntSetting(String key, int i) {
+        return Integer.parseInt(props.getProperty(key, i+""));
+    }
+
+    void setIntSetting(String key, int width) {
+        props.setProperty(key, ""+width);
+    }
+
+    void setBooleanSetting(String key, boolean selected) {
+        props.setProperty(key,Boolean.toString(selected));
+    }
+
+    boolean getBooleanSetting(String windowsplitsidebaropen, boolean b) {
+        return Boolean.parseBoolean(props.getProperty(windowsplitsidebaropen, Boolean.toString(b)));
+    }
     
     public static class SketchBuffer {
         private final File file;

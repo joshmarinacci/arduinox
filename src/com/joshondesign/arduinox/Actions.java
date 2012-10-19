@@ -142,6 +142,8 @@ public class Actions  {
                 for(SketchBuffer buffer: sketch.getBuffers()) {
                     if(buffer.isDirty()) dirty = true;
                 }
+                EditorWindow window = Global.getGlobal().getWindowForSketch(sketch);
+                window.shutdown();
             }
             if(dirty) {
                 int result = JOptionPane.showConfirmDialog(null, "There are unsaved documents. Do you wish to save them?", "Unsaved Documents", JOptionPane.YES_NO_CANCEL_OPTION);
@@ -254,8 +256,7 @@ public class Actions  {
                 Global.getGlobal().setWindowForSketch(sketch, frame);
                 frame.setTitle(name);
                 frame.pack();
-                frame.setSize(800,600);
-                frame.setVisible(true);
+                frame.resetPosition();
             } catch (IOException ex) {
                 Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -332,6 +333,7 @@ public class Actions  {
     }
     
     private void quit() {
+        System.out.println("quitting");
         System.exit(0);
     }
     
