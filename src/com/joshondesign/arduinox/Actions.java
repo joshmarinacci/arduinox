@@ -333,7 +333,6 @@ public class Actions  {
     }
     
     private void quit() {
-        System.out.println("quitting");
         System.exit(0);
     }
     
