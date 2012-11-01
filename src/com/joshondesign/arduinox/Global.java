@@ -365,11 +365,6 @@ public class Global {
                     recentSketches.add(ss);
                 }
             }
-            Util.p("recent sketches = ");
-            Util.p(recentSketches);
-            
-                    
-            
         } catch (IOException ex) {
             ex.printStackTrace();
         }

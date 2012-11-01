@@ -325,7 +325,6 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         lightThemeItem.addActionListener(actions.switchLightTheme);
         darkThemeItem.addActionListener(actions.switchDarkTheme);
         
-        Util.p("---- setting up the menu");
         for(File skfile : Global.getGlobal().getRecentSketches()){
             recentSketchesMenu.add(new JMenuItem(new OpenSketchAction(skfile)));
         }
