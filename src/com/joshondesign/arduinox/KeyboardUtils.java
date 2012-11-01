@@ -47,12 +47,11 @@ public class KeyboardUtils {
         bind("control A",DefaultEditorKit.beginLineAction);
         bind("control E",DefaultEditorKit.endLineAction);
         
-        /*
-        keys.addActionForKeyStroke(KeyStroke.getKeyStroke("control P"), upAction);
+        
         for(Action a : pane.getKeymap().getBoundActions()) {
-            Util.p("boudn action: " + a);
+            Util.p("bound action: " + a.getValue(Action.NAME) + " " + a.getValue(Action.ACCELERATOR_KEY));
         }
-        */
+        
     }
 
     private static void bind(String name, String upAction) {
