@@ -15,12 +15,16 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,6 +45,8 @@ public class Global {
     private Device extracore;
     private File arduinoDir;
     private String ARDUINO_IDE_PATH = "ARDUINO_IDE_PATH";
+    private String RECENT_SKETCHES = "RECENT_SKETCHES";
+    
     public static final int SERIAL_RATE_INTS[] = {
         300,1200,2400,4800,9600,14400,
         19200,28800,38400,57600,115200
@@ -50,6 +56,8 @@ public class Global {
         "300","1200","2400","4800","9600","14400",
         "19200","28800","38400","57600","115200"
     };
+    private List<String> recentSketches;
+    private Set<String> recentUniqueSketches;
 
 
     private Global() {
@@ -70,6 +78,8 @@ public class Global {
 
     void addSketch(Sketch sketch) {
         this.sketches.add(sketch);
+        this.recentSketches.add(sketch.getDirectory().getAbsolutePath());
+        saveSettings();
         pcs.firePropertyChange("sketches", sketches, sketch);
     }
 
@@ -323,6 +333,13 @@ public class Global {
         try {
             Properties props = new Properties();
             props.setProperty(ARDUINO_IDE_PATH, this.arduinoDir.getAbsolutePath());
+            StringBuffer sb = new StringBuffer();
+            for(String s : recentSketches) {
+                sb.append(s);
+                sb.append(",");
+            }
+            props.setProperty(RECENT_SKETCHES, sb.toString());
+            Util.p("write out" + sb.toString());
             props.storeToXML(new FileOutputStream("settings.xml"), "ArduinoX Settings");
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -336,6 +353,23 @@ public class Global {
             if(props.containsKey(ARDUINO_IDE_PATH)) {
                 this.arduinoDir = new File(props.getProperty(ARDUINO_IDE_PATH));
             }
+            recentSketches = new ArrayList<>();
+            recentUniqueSketches = new HashSet<>();
+            if(props.containsKey(RECENT_SKETCHES)) {
+                String[] s = props.getProperty(RECENT_SKETCHES).split(",");
+                for(String ss : s) {
+                    //first, skip the dupes
+                    if(recentUniqueSketches.contains(ss)) continue;
+                    
+                    recentUniqueSketches.add(ss);
+                    recentSketches.add(ss);
+                }
+            }
+            Util.p("recent sketches = ");
+            Util.p(recentSketches);
+            
+                    
+            
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -346,6 +380,14 @@ public class Global {
             if(d.getName().equals(deviceName)) return d;
         }
         return null;
+    }
+
+    Iterable<File> getRecentSketches() {
+        List<File> files = new ArrayList<>();
+        for(String skdir : recentSketches) {
+            files.add(new File(skdir));
+        }
+        return files;
     }
 
 }

@@ -15,6 +15,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -323,6 +324,11 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         standardThemeItem.addActionListener(actions.switchStandardTheme);
         lightThemeItem.addActionListener(actions.switchLightTheme);
         darkThemeItem.addActionListener(actions.switchDarkTheme);
+        
+        Util.p("---- setting up the menu");
+        for(File skfile : Global.getGlobal().getRecentSketches()){
+            recentSketchesMenu.add(new JMenuItem(new OpenSketchAction(skfile)));
+        }
     }
 
     void resetPosition() {
@@ -497,6 +503,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         jMenu1 = new javax.swing.JMenu();
         newSketchItem = new javax.swing.JMenuItem();
         openSketchItem = new javax.swing.JMenuItem();
+        recentSketchesMenu = new javax.swing.JMenu();
         saveMenuItem = new javax.swing.JMenuItem();
         checkMenuItem = new javax.swing.JMenuItem();
         quitMenu = new javax.swing.JMenuItem();
@@ -676,6 +683,9 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         openSketchItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.META_MASK));
         openSketchItem.setText("Open Sketch");
         jMenu1.add(openSketchItem);
+
+        recentSketchesMenu.setText("Recent Sketches");
+        jMenu1.add(recentSketchesMenu);
 
         saveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.META_MASK));
         saveMenuItem.setText("Save");
@@ -878,6 +888,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     private javax.swing.JMenuItem pasteItem;
     private javax.swing.JComboBox portDropdown;
     private javax.swing.JMenuItem quitMenu;
+    private javax.swing.JMenu recentSketchesMenu;
     private javax.swing.JMenuItem redoItem;
     private javax.swing.JToggleButton rightToggle;
     private javax.swing.JButton runButton;

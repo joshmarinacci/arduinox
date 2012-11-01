@@ -336,7 +336,7 @@ public class Actions  {
         System.exit(0);
     }
     
-    private void openNewSketch(File dir) {
+    public static void openNewSketch(File dir) {
         try {
             Sketch sketch = new Sketch(dir);
             Global.getGlobal().addSketch(sketch);
