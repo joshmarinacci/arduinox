@@ -55,6 +55,7 @@ public class Start {
                     
                     DefaultSyntaxKit.initKit();
                     Configuration config = DefaultSyntaxKit.getConfig(DefaultSyntaxKit.class);
+                    KeyboardUtils.setup(config);
                     
                     /*
                     config.put("CaretColor","0x00ff00"); //color of the blinking cursor
