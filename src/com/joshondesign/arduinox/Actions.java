@@ -31,7 +31,7 @@ public class Actions  {
     final Sketch sketch;
     
     private float fontSize = 12f;
-    private ColorTheme STANDARD_THEME;
+    public ColorTheme STANDARD_THEME;
     private ColorTheme DARK_THEME;
     private ColorTheme LIGHT_THEME;
     private ColorTheme theme;

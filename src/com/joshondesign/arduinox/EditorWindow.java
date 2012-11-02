@@ -9,6 +9,7 @@ import com.joshondesign.arduino.common.SerialException;
 import com.joshondesign.arduino.common.Util;
 import com.joshondesign.arduinox.Sketch.SketchBuffer;
 import gnu.io.CommPortIdentifier;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -47,14 +48,12 @@ import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultEditorKit;
+import javax.swing.text.EditorKit;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Keymap;
+import jsyntaxpane.DefaultSyntaxKit;
 import jsyntaxpane.actions.ActionUtils;
 
-/**
- *
- * @author josh
- */
 public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortChange {
     
     private List<JEditorPane> editors = new ArrayList<>();
@@ -133,7 +132,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
             public void propertyChange(PropertyChangeEvent evt) {
                 ColorTheme theme = (ColorTheme) evt.getNewValue();
                 for(JEditorPane pane : editors) {
-                    pane.setBackground(theme.backgroundColor);
+                    updateTheme(theme,pane);
                 }
             }
         });
@@ -363,8 +362,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         sketch.setBooleanSetting("window.split.sidebar.open",rightToggle.isSelected());
         actions.sketch.saveSettings();
     }
-    
-    
+
     public static class SerialPortComboBoxRenderer extends DefaultListCellRenderer {
 
         @Override
@@ -412,17 +410,19 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     private void createNewTab(final JTabbedPane tabs, final Sketch.SketchBuffer buffer) {
         final CustomEditorPane pane = new CustomEditorPane(buffer);
         final JScrollPane scroll = new JScrollPane(pane);
-        pane.setContentType("text/java");
+        pane.setContentType("text/c");
+        
         //pane.setFont(new Font("Monaco",Font.PLAIN,12));
-        pane.setFont(customFont.deriveFont(12f));
         try {
             pane.setText(Util.toString(buffer.getFile()));
         } catch (IOException ex) {
             Logger.getLogger(EditorWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+        updateTheme(actions.STANDARD_THEME,pane);
         this.editors.add(pane);
         this.scrolls.put(buffer,scroll);
+        pane.requestFocus();
         
         //TODO: this could probably be made shared
         pane.getDocument().addDocumentListener(new DocumentListener() {
@@ -819,6 +819,89 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     private void serialRateComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serialRateComboActionPerformed
         actions.sketch.setSerialRate(Global.SERIAL_RATE_INTS[serialRateCombo.getSelectedIndex()]);
     }//GEN-LAST:event_serialRateComboActionPerformed
+
+
+    private void updateTheme(ColorTheme theme, JEditorPane pane) {
+        EditorKit editorKit = pane.getEditorKit();
+        
+        Color background = new Color(0xffffff);
+        Color currentLine = new Color(0xefefef);
+        Color selection = new Color(0xd6d6d6);
+        Color foreground = new Color(0x4d4d4c);
+        Color comment = new Color(0x8e908c);
+        
+        Color blue = new Color(0x4271ae);
+        Color green = new Color(0x718c00);
+        Color purple = new Color(0x8959a8);
+        Color red = new Color(0xc82829);
+        Color orange = new Color(0xf5871f);
+        Color yellow = new Color(0xeab700);
+
+
+        
+        DefaultSyntaxKit kit = (DefaultSyntaxKit) editorKit;
+        pane.setBackground(background);
+        //0 = default style
+        //2 = italic
+        //1 = bold
+        kit.setProperty("Style.COMMENT", toHex(comment,2));  //block and line comments
+        kit.setProperty("Style.COMMENT2", toHex(Color.PINK,0)); //??
+        kit.setProperty("Style.DEFAULT", toHex(foreground,0));
+        kit.setProperty("Style.DELIMITER", toHex(Color.PINK,1));
+        kit.setProperty("Style.ERROR", toHex(Color.PINK,3));
+        kit.setProperty("Style.IDENTIFIER", toHex(blue,0)); //everything?
+        kit.setProperty("Style.KEYWORD", toHex(purple,1)); // 
+        kit.setProperty("Style.KEYWORD2", toHex(purple,1)); // #include
+        kit.setProperty("Style.NUMBER", toHex(red,1)); //number literals
+        kit.setProperty("Style.OPERATOR", toHex(foreground,0)); //plus, dot, comma, asterix, etc
+        kit.setProperty("Style.REGEX", toHex(foreground,0));
+        kit.setProperty("Style.STRING", toHex(green,0)); //string literals
+        kit.setProperty("Style.STRING2", toHex(Color.PINK,0));
+        kit.setProperty("Style.TYPE", toHex(green,0)); //void, int
+        kit.setProperty("Style.TYPE2", toHex(Color.PINK,0));
+        kit.setProperty("Style.TYPE3", toHex(Color.PINK,0));
+        kit.setProperty("Style.WARNING", toHex(Color.PINK,0));
+        
+        kit.setProperty("CaretColor", toHex(red));
+        kit.setProperty("SelectionColor", toHex(selection));
+        kit.setProperty("PairMarker.Color",toHex(yellow));
+        kit.setProperty("TokenMarker.Color",toHex(yellow));
+        kit.setProperty("LineNumbers.Background",toHex(currentLine));
+        kit.setProperty("LineNumbers.CurrentBack",toHex(selection));
+        kit.setProperty("LineNumbers.Foreground",toHex(Color.BLACK));
+        kit.setProperty("LineNumbers.RightMargin","7");
+        
+        /*
+        Style.COMMENT 0x339933, 2
+Style.COMMENT2 0x339933, 3
+Style.DEFAULT 0x000000, 0
+Style.DELIMITER 0x000000, 1
+Style.ERROR 0xCC0000, 3
+Style.IDENTIFIER 0x000000, 0
+Style.KEYWORD 0x3333ee, 0
+Style.KEYWORD2 0x3333ee, 3
+Style.NUMBER 0x999933, 1
+Style.OPERATOR 0x000000, 0
+Style.REGEX 0xcc6600, 0
+Style.STRING 0xcc6600, 0
+Style.STRING2 0xcc6600, 1
+Style.TYPE 0x000000, 2
+Style.TYPE2 0x000000, 1
+Style.TYPE3 0x000000, 3
+Style.WARNING 0xCC0000, 0
+*/
+        editorKit.install(pane);
+        pane.setFont(customFont.deriveFont(14f));
+    }
+    
+    private String toHex(Color color, int i) {
+        return "0x" + Integer.toHexString(color.getRGB()).substring(2)+", "+i;
+    }
+    private String toHex(Color color) {
+        return "0x" + Integer.toHexString(color.getRGB()).substring(2);
+    }
+    
+    
 
     /**
      * @param args the command line arguments
