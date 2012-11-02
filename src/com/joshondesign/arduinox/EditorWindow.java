@@ -74,7 +74,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     public EditorWindow(Actions actions) {
         this.actions = actions;
         try {
-            customFont = Font.createFont(Font.TRUETYPE_FONT, EditorWindow.class.getResourceAsStream("resources/SourceCodePro-Regular.ttf"));
+            customFont = Font.createFont(Font.TRUETYPE_FONT, EditorWindow.class.getResourceAsStream("resources/SourceCodePro-Semibold.ttf"));
         } catch (Exception ex) {
             ex.printStackTrace();
         }
