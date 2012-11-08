@@ -71,4 +71,52 @@
     nbproject/build-impl.xml file. 
 
     -->
+    
+    
+<target name="mac-bundle">
+    <!-- Import the AppBundlerTaks from ant lib directory -->
+    <taskdef name="bundleapp" 
+        classpath="appbundler.jar"
+        classname="com.oracle.appbundler.AppBundlerTask"/>
+
+    <bundleapp outputdirectory="."
+        name="ArduinoX"
+        displayname="ArduinoX"
+        identifier="com.joshondesign.arduinox.Start"
+        shortversion="1.0"
+        mainclassname="com.joshondesign.arduinox.Start"
+        copyright="2012 FooBarBaz LLC."
+        applicationCategory="public.app-category.entertainment">
+
+        <!-- The directory where your OpenJDK runtime is. -->
+        <runtime dir="/Library/Java/JavaVirtualMachines/jdk1.7.0_09.jdk/Contents/Home/"/>
+
+        <!-- The bundleapp task doesn't support classpathref so all 
+            the run classpath entries must be stated here too.
+        -->
+        <classpath file="dist/ArduinoX.jar"/>
+        <classpath file="dist/lib/RXTXcomm.jar"/>
+        <classpath file="dist/lib/arduinocompile.jar"/>
+        <classpath file="dist/lib/jsyntaxpane-0.9.6.jar"/>
+        <classpath file="dist/lib/swing-layout-1.0.4.jar"/>
+        <classpath file="dist/lib/XMLLib.jar"/>
+        
+        <librarypath file="lib/librxtxSerial.jnilib"/>
+                        
+        <!-- Workaround since the icon parameter for bundleapp 
+             doesn't work. (It's not a bug in AppBundler but 
+             in the JavaAppLauncher, see Known Problems).
+        -->
+<!--        <option value="-Xdock:icon=Contents/Resources/${bundle.icon}"/> -->
+
+        <!-- OSX specific options, optional -->
+        <option value="-Dapple.laf.useScreenMenuBar=true"/>
+        <option value="-Dcom.apple.macos.use-file-dialog-packages=true"/>
+        <option value="-Dcom.apple.macos.useScreenMenuBar=true"/>
+        <option value="-Dcom.apple.mrj.application.apple.menu.about.name=MyApp"/>
+        <option value="-Dcom.apple.smallTabs=true"/>
+        <option value="-Xmx1024M"/>
+    </bundleapp>
+</target>   
+
 </project>

@@ -164,8 +164,9 @@ public class Global {
     private List<Example> scanForExamples() {
         List<Example> examples = new ArrayList<>();
         try {
-            File basedir = new File("../arduino-resources/examples/");
-            Util.p("basedir = " + basedir.getCanonicalPath());
+            File basedir = new File(getDocumentsDir(),"arduino-resources");
+            File exdir = new File(basedir,"examples/");
+            Util.p("basedir = " + exdir.getCanonicalPath());
             scanForExamples(basedir,examples);
         } catch (IOException ex) {
             Logger.getLogger(Global.class.getName()).log(Level.SEVERE, null, ex);
@@ -177,8 +178,8 @@ public class Global {
     private List<Device> scanForDevices() {
         List<Device> devices  = new ArrayList<>();
         try {
-            File basedir = new File("../arduino-resources");
-            Util.p("basedir = " + basedir.getCanonicalPath());
+            File basedir = new File(getDocumentsDir(),"arduino-resources");
+            Util.p("resources dir = " + basedir.getCanonicalPath());
             for(File xml : new File(basedir,"hardware/boards/").listFiles()) {
                 Util.p("parsing: " + xml.getCanonicalPath());
                 try {
