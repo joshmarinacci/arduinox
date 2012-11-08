@@ -356,7 +356,6 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         consoleToggle.setSelected(sketch.getBooleanSetting("window.split.editor.open",true));
         rightToggle.setSelected(sketch.getBooleanSetting("window.split.sidebar.open",true));
         editorSplitPosition = sketch.getIntSetting("window.split.editor", 300);
-        Util.p("got position: " + editorSplitPosition);
         masterSplitPosition = sketch.getIntSetting("window.split.sidebar", 550);
         this.setVisible(true);
         if(consoleToggle.isSelected()) {
@@ -377,7 +376,6 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         sketch.setIntSetting("window.height",getHeight());
         sketch.setIntSetting("window.split.sidebar", masterSplitPosition);
         sketch.setIntSetting("window.split.editor", editorSplitPosition);
-        Util.p("saving positon: " + editorSplitPosition);
         sketch.setBooleanSetting("window.split.editor.open",consoleToggle.isSelected());
         sketch.setBooleanSetting("window.split.sidebar.open",rightToggle.isSelected());
         actions.sketch.saveSettings();
