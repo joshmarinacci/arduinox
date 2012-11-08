@@ -340,6 +340,10 @@ public class Global {
         this.arduinoDir = arduinoPath;
         saveSettings();
     }
+    
+    File getDocumentsDir() {
+        return new File(System.getProperty("user.home"),"Documents/Arduino");
+    }
 
     private void saveSettings() {
         try {

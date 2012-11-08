@@ -57,7 +57,7 @@ public class Actions  {
                     try {
                         CompileTask task = new CompileTask();
                         task.setSketchDir(sketch.getDirectory());
-                        task.setUserLibrariesDir(new File("/Users/josh/Documents/Arduino/Libraries"));
+                        task.setUserLibrariesDir(new File(Global.getGlobal().getDocumentsDir(),"Libraries"));
                         task.setArduinoRoot(new File(Global.getGlobal().getArduinoDir(),"Contents/Resources/Java"));
                         task.setDevice(sketch.getCurrentDevice());
                         task.setOutputListener(new CompilerOutput());
@@ -113,8 +113,8 @@ public class Actions  {
                         sketch.getCurrentPort().lock();
                         CompileTask task = new CompileTask();
                         task.setSketchDir(sketch.getDirectory());
-                        task.setUserLibrariesDir(new File("/Users/josh/Documents/Arduino/Libraries"));
-                        task.setArduinoRoot(new File("/Users/josh/projects/Arduino.app/Contents/Resources/Java"));
+                        task.setUserLibrariesDir(new File(Global.getGlobal().getDocumentsDir(),"Libraries"));
+                        task.setArduinoRoot(new File(Global.getGlobal().getArduinoDir(),"Contents/Resources/Java"));
                         task.setUploadPortPath(sketch.getCurrentPort().portName);
                         task.setDevice(sketch.getCurrentDevice());
                         task.setOutputListener(new CompilerOutput());
@@ -246,7 +246,7 @@ public class Actions  {
                 Util.p("creating a new sketch");
                 String name = JOptionPane.showInputDialog(null, "Name for your new sketch", "NewSketch1");
                         
-                File sketchDir = new File("/Users/josh/Documents/Arduino/",name);
+                File sketchDir = new File(Global.getGlobal().getDocumentsDir(),name);
                 sketchDir.mkdir();
                 Sketch sketch  = new Sketch(sketchDir);
                 Global.getGlobal().addSketch(sketch);

@@ -86,7 +86,7 @@ public class Start {
     public static void openLastSketch() {
         try {
             Global global = Global.getGlobal();
-            File sketchDir = new File("/Users/josh/Documents/Arduino/Blink");
+            File sketchDir = new File(global.getDocumentsDir(),"Blink");
             Sketch sketch  = new Sketch(sketchDir);
             global.addSketch(sketch);
 
