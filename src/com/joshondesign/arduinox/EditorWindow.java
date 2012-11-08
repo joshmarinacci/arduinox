@@ -802,7 +802,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     }//GEN-LAST:event_rightToggleActionPerformed
 
     private void serialActiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serialActiveActionPerformed
-        SerialPort port = actions.sketch.getCurrentConfig().getSerialPort();
+        SerialPort port = actions.sketch.getCurrentPort();
         if(port != null) {
             if(!serialActive.isSelected()) {
                 disconnect();

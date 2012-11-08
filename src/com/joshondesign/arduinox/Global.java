@@ -6,6 +6,9 @@ package com.joshondesign.arduinox;
 
 import com.joshondesign.arduino.common.Device;
 import com.joshondesign.arduino.common.Util;
+import com.joshondesign.xml.Doc;
+import com.joshondesign.xml.Elem;
+import com.joshondesign.xml.XMLParser;
 import gnu.io.CommPortIdentifier;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -39,9 +42,6 @@ public class Global {
     private Map<Sketch,EditorWindow> windows = new HashMap<>();
     private final List<SerialPort> ports;
     private final List<Device> devices;
-    private final List<Config> configs;
-    public Config editConfigStub;
-    private Config defaultConfig;
     private Device extracore;
     private File arduinoDir;
     private String ARDUINO_IDE_PATH = "ARDUINO_IDE_PATH";
@@ -61,9 +61,9 @@ public class Global {
 
 
     private Global() {
+        recentSketches = new ArrayList<>();
         this.ports = scanForSerialPorts();
         this.devices = scanForDevices();
-        this.configs = loadConfigs();
         loadSettings();
     }
     
@@ -159,17 +159,42 @@ public class Global {
         return null;
     }
 
-    Config getConfigForName(String configName) {
-        for(Config config : this.configs) {
-            if(config.getName().equals(configName)) {
-                return config;
-            }
-        }
-        return null;
-    }
-    
     private List<Device> scanForDevices() {
         List<Device> devices  = new ArrayList<>();
+        try {
+            File basedir = new File("../arduino-resources");
+            Util.p("basedir = " + basedir.getCanonicalPath());
+            for(File xml : new File(basedir,"hardware/boards/").listFiles()) {
+                Util.p("parsing: " + xml.getCanonicalPath());
+                try {
+                    Doc doc = XMLParser.parse(xml);
+                    Elem e = doc.xpathElement("/board");
+                    Device d = new Device();
+                    d.name = e.attr("name");
+                    d.protocol = e.attr("protocol");
+                    d.maximum_size = Integer.parseInt(e.attr("maximum-size"));
+                    d.upload_speed = Integer.parseInt(e.attr("upload-speed"));
+                    d.low_fuses = parseHex(e.attr("low-fuses"));
+                    d.high_fuses = parseHex(e.attr("high-fuses"));
+                    d.extended_fuses = parseHex(e.attr("extended-fuses"));
+                    d.path = e.attr("path");
+                    d.file = e.attr("file");
+                    d.unlock_bits = parseHex(e.attr("unlock-bits"));
+                    d.lock_bits = parseHex(e.attr("lock-bits"));
+                    d.mcu = e.attr("mcu");
+                    d.f_cpu = e.attr("f-cpu");
+                    d.core = e.attr("core");
+                    d.variant = e.attr("variant");
+                    devices.add(d);
+                } catch (Exception ex) {
+                    Logger.getLogger(Global.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        } catch (IOException ex2) {
+            ex2.printStackTrace();
+        }
+        
+        /*
         Device uno = new Device();
         uno.name = "Arduino Uno";
         uno.protocol = "arduino";
@@ -188,6 +213,26 @@ public class Global {
         uno.variant = "standard";
         devices.add(uno);
         
+        
+        
+        Device diecimila = new Device();
+        diecimila.name="Arduino Diecimila or Duemilanove w/ ATmega168";
+        diecimila.protocol = "arduino";
+        diecimila.maximum_size =14336;
+        diecimila.upload_speed = 19200;
+        diecimila.low_fuses = 0xff;
+        diecimila.high_fuses = 0xdd;
+        diecimila.extended_fuses = 0x00;
+        diecimila.path = "atmega";
+        diecimila.file = "ATmegaBOOT_168_diecimila.hex";
+        diecimila.unlock_bits = 0x3f;
+        diecimila.lock_bits = 0x0f;
+        diecimila.mcu = "atmega168";
+        diecimila.f_cpu = "16000000L";
+        diecimila.core = "arduino";
+        diecimila.variant = "standard";
+        devices.add(diecimila);
+
         
         
         Device atmega328 = new Device();
@@ -263,7 +308,7 @@ public class Global {
         extracore.compatible = pro5v328;
         
         devices.add(extracore);
-        
+        */
         
         return devices;
     }
@@ -272,54 +317,6 @@ public class Global {
         return this.devices;
     }
     
-    List<Config> getConfigs() {
-        return this.configs;
-    }
-
-    private List<Config> loadConfigs() {
-        List<Config> configs = new ArrayList<>();
-        Config c1 = new Config() {
-
-            @Override
-            SerialPort getSerialPort() {
-                if(ports.size() == 0) return null;
-                return ports.get(0);
-            }
-            
-        };
-        c1.name = "Default: auto";
-        c1.device = devices.get(0);
-        configs.add(c1);
-        defaultConfig = c1;
-        
-        Config c2 = new Config();
-        c2.name = "Boarduino Project";
-        c2.device = devices.get(1);
-        configs.add(c2);
-        
-        editConfigStub = new Config();
-        editConfigStub.name = "Edit ...";
-        
-        Config c3 = new Config() {
-
-            @Override
-            SerialPort getSerialPort() {
-                if(ports.size() == 0) return null;
-                return ports.get(0);
-            }
-            
-        };
-        c3.name = "Extra Core: auto";
-        c3.device = extracore;
-        configs.add(c3);
-        
-        return configs;
-    }
-
-    Config getDefaultConfig() {
-        return defaultConfig;
-    }
-
     File getArduinoDir() {
         return arduinoDir;
     }
@@ -353,7 +350,6 @@ public class Global {
             if(props.containsKey(ARDUINO_IDE_PATH)) {
                 this.arduinoDir = new File(props.getProperty(ARDUINO_IDE_PATH));
             }
-            recentSketches = new ArrayList<>();
             recentUniqueSketches = new HashSet<>();
             if(props.containsKey(RECENT_SKETCHES)) {
                 String[] s = props.getProperty(RECENT_SKETCHES).split(",");
@@ -383,6 +379,16 @@ public class Global {
             files.add(new File(skdir));
         }
         return files;
+    }
+
+    private int parseHex(String attr) {
+        if(attr == null || attr.trim().equals("")) {
+            throw new IllegalArgumentException("The value '" + attr + "' is not a valid hex number");
+        }
+        if(attr.toLowerCase().startsWith("0x")) {
+            attr = attr.substring(2);
+        }
+        return Integer.parseInt(attr,16);
     }
 
 }

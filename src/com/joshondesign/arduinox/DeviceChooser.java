@@ -30,28 +30,6 @@ public class DeviceChooser extends javax.swing.JPanel {
         initComponents();
         Global g = Global.getGlobal();
         
-        configList.setModel(new DefaultComboBoxModel(Global.getGlobal().getConfigs().toArray()));
-        configList.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-                Component comp = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                if(comp instanceof JLabel && value instanceof Config) {
-                    JLabel label = (JLabel) comp;
-                    Config config = (Config) value;
-                    label.setText(config.getName());
-                }
-                return comp;
-            }
-        });
-        configList.setSelectedItem(g.getConfigs().get(0));
-        configList.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Config config = (Config) configList.getSelectedItem();
-                deviceList.setSelectedValue(config.getDevice(), true);
-            }
-        });
-        
         serialPortList.setModel(new DefaultComboBoxModel(Global.getGlobal().getPorts().toArray()));
         serialPortList.setRenderer(new DefaultListCellRenderer() {
             @Override
@@ -79,8 +57,6 @@ public class DeviceChooser extends javax.swing.JPanel {
                 return comp;
             }
         });
-        deviceList.setSelectedValue(g.getConfigs().get(0).getDevice(), true);
-        
         
         deviceList.addListSelectionListener(new ListSelectionListener() {
             @Override
