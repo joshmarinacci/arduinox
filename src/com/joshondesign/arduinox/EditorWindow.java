@@ -41,6 +41,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
@@ -355,6 +356,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         consoleToggle.setSelected(sketch.getBooleanSetting("window.split.editor.open",true));
         rightToggle.setSelected(sketch.getBooleanSetting("window.split.sidebar.open",true));
         editorSplitPosition = sketch.getIntSetting("window.split.editor", 300);
+        Util.p("got position: " + editorSplitPosition);
         masterSplitPosition = sketch.getIntSetting("window.split.sidebar", 550);
         this.setVisible(true);
         if(consoleToggle.isSelected()) {
@@ -375,6 +377,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         sketch.setIntSetting("window.height",getHeight());
         sketch.setIntSetting("window.split.sidebar", masterSplitPosition);
         sketch.setIntSetting("window.split.editor", editorSplitPosition);
+        Util.p("saving positon: " + editorSplitPosition);
         sketch.setBooleanSetting("window.split.editor.open",consoleToggle.isSelected());
         sketch.setBooleanSetting("window.split.sidebar.open",rightToggle.isSelected());
         actions.sketch.saveSettings();
@@ -553,10 +556,20 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
 
         masterSplit.setDividerLocation(400);
         masterSplit.setResizeWeight(1.0);
+        masterSplit.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                masterSplitPropertyChange(evt);
+            }
+        });
 
         editorSplit.setDividerLocation(200);
         editorSplit.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
         editorSplit.setResizeWeight(1.0);
+        editorSplit.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                editorSplitPropertyChange(evt);
+            }
+        });
         editorSplit.setLeftComponent(tabbedPane);
 
         console.setColumns(20);
@@ -942,6 +955,23 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         serialConsole.setText("");
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void editorSplitPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_editorSplitPropertyChange
+        if(evt.getPropertyName().equals(JSplitPane.LAST_DIVIDER_LOCATION_PROPERTY)) {
+            if(consoleToggle.isSelected()) {
+                editorSplitPosition = editorSplit.getDividerLocation();
+            }
+        }
+    }//GEN-LAST:event_editorSplitPropertyChange
+
+    private void masterSplitPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_masterSplitPropertyChange
+        if(evt.getPropertyName().equals(JSplitPane.LAST_DIVIDER_LOCATION_PROPERTY)) {
+            if(rightToggle.isSelected()) {
+                masterSplitPosition = masterSplit.getDividerLocation();
+            }
+        }
+        // TODO add your handling code here:
+    }//GEN-LAST:event_masterSplitPropertyChange
 
 
     private void updateTheme(ColorTheme theme, JEditorPane pane) {
