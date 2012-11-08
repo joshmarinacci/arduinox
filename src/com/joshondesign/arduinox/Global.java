@@ -58,12 +58,14 @@ public class Global {
     };
     private List<String> recentSketches;
     private Set<String> recentUniqueSketches;
+    private final List<Example> examples;
 
 
     private Global() {
         recentSketches = new ArrayList<>();
         this.ports = scanForSerialPorts();
         this.devices = scanForDevices();
+        this.examples = scanForExamples();
         loadSettings();
     }
     
@@ -159,6 +161,19 @@ public class Global {
         return null;
     }
 
+    private List<Example> scanForExamples() {
+        List<Example> examples = new ArrayList<>();
+        try {
+            File basedir = new File("../arduino-resources/examples/");
+            Util.p("basedir = " + basedir.getCanonicalPath());
+            scanForExamples(basedir,examples);
+        } catch (IOException ex) {
+            Logger.getLogger(Global.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return examples;
+    }
+    
+    
     private List<Device> scanForDevices() {
         List<Device> devices  = new ArrayList<>();
         try {
@@ -389,6 +404,35 @@ public class Global {
             attr = attr.substring(2);
         }
         return Integer.parseInt(attr,16);
+    }
+
+    private void scanForExamples(File basedir, List<Example> examples) {
+        for(File file : basedir.listFiles()) {
+            if(file.getName().toLowerCase().equals("example.xml")) {
+                examples.add(parseExample(file));
+            }
+            if(file.isDirectory()) {
+                scanForExamples(file,examples);
+            }
+        }
+    }
+
+    private Example parseExample(File file) {
+        try {
+            Doc doc = XMLParser.parse(file);
+            Elem e = doc.xpathElement("/example");
+            Example ex = new Example();
+            ex.name = e.attr("name");
+            for(Elem k : e.xpath("keyword")) {
+                ex.keywords.add(k.text());
+            }
+            ex.description = e.xpathString("description/text()");
+            Util.p("parsed example: " + ex.name);
+            return ex;
+        } catch (Exception ex) {
+            Logger.getLogger(Global.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
 }
