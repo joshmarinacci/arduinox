@@ -22,9 +22,7 @@ class SerialPort {
     }
 
     void lock() {
-        Util.p("locking the port. notifying");
         for(PortChange l : listeners) {
-            Util.p("notified");
             l.lock();
         }
     }

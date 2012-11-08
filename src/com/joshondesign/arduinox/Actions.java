@@ -75,7 +75,6 @@ public class Actions  {
     ColorTheme getCurrentTheme() {
         return this.theme;
     }
-    
     class CompilerOutput implements OutputListener {
 
         public CompilerOutput() {

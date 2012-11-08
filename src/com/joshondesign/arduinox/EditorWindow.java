@@ -280,12 +280,10 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
 
     @Override
     public void lock() {
-        Util.p("locking the port");
         serialActive.setEnabled(false);
         serialActive.setText("Uploading...");
         serialRateCombo.setEnabled(false);
         if(serial != null) {
-            Util.p("displosing of the current serial");
             serial.dispose();
             serial = null;
         }
@@ -505,6 +503,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         serialRateCombo = new javax.swing.JComboBox();
         serialPortLabel = new javax.swing.JLabel();
         autoScroll = new javax.swing.JCheckBox();
+        jButton1 = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         helpScroll = new javax.swing.JScrollPane();
         helpPane = new javax.swing.JEditorPane();
@@ -585,12 +584,19 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
             }
         });
 
-        serialPortLabel.setText("serial port");
+        serialPortLabel.setText("Baud Rate");
 
         autoScroll.setText("autoscroll");
         autoScroll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 autoScrollActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Clear");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
             }
         });
 
@@ -601,12 +607,11 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
             .add(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .add(jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(serialRateCombo, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                    .add(serialPortLabel)
                     .add(serialActive)
-                    .add(jPanel1Layout.createSequentialGroup()
-                        .add(6, 6, 6)
-                        .add(serialPortLabel))
-                    .add(autoScroll))
+                    .add(autoScroll)
+                    .add(jButton1)
+                    .add(serialRateCombo, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 259, Short.MAX_VALUE)
                 .addContainerGap())
@@ -617,10 +622,12 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
             .add(jPanel1Layout.createSequentialGroup()
                 .add(serialActive)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(serialRateCombo, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(serialPortLabel)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 75, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .add(serialRateCombo, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .add(jButton1)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(autoScroll)
                 .addContainerGap())
         );
@@ -842,7 +849,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jToolBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .add(masterSplit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 619, Short.MAX_VALUE)
+            .add(masterSplit, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -886,7 +893,6 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     private void serialActiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serialActiveActionPerformed
         SerialPort port = actions.sketch.getCurrentPort();
         if(port != null) {
-            Util.p("listening to the port");
             port.addListener(this);
             if(!serialActive.isSelected()) {
                 disconnect();
@@ -932,6 +938,10 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         desc.append("</body></html>");
         exampleDescription.setText(desc.toString());
     }//GEN-LAST:event_examplesListValueChanged
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        serialConsole.setText("");
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 
     private void updateTheme(ColorTheme theme, JEditorPane pane) {
@@ -1067,6 +1077,7 @@ Style.WARNING 0xCC0000, 0
     private javax.swing.JEditorPane helpPane;
     private javax.swing.JScrollPane helpScroll;
     private javax.swing.JMenuItem indentMenuItem;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
