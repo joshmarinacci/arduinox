@@ -424,7 +424,8 @@ public class Global {
             Example ex = new Example();
             ex.name = e.attr("name");
             for(Elem k : e.xpath("keyword")) {
-                ex.keywords.add(k.text());
+                ex.keywords.add(k.text().toLowerCase());
+                Util.p("added keyword: " + k.text().toLowerCase());
             }
             ex.description = e.xpathString("description/text()");
             Util.p("parsed example: " + ex.name);
@@ -436,7 +437,22 @@ public class Global {
     }
 
     List<Example> findExamplesByText(String text) {
-        return examples;
+        List<Example> results = new ArrayList<>();
+        for(Example ex : examples) {
+            if(ex.name.toLowerCase().contains(text.toLowerCase())) {
+                results.add(ex);
+                continue;
+            }
+            if(ex.keywords.contains(text.toLowerCase())) {
+                results.add(ex);
+                continue;
+            }
+        }
+        return results;
+    }
+
+    List<Example> getExamples() {
+        return this.examples;
     }
 
 }

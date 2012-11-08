@@ -260,8 +260,22 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
                 }
                 return comp;
             }
-            
         });
+        
+        final List<Example> examples = Global.getGlobal().getExamples();
+        AbstractListModel<Example> model = new AbstractListModel<Example>() {
+            @Override
+            public int getSize() {
+                return examples.size();
+            }
+
+            @Override
+            public Example getElementAt(int index) {
+                return examples.get(index);
+            }
+        };
+        examplesList.setModel(model);
+        
     }
 
     private void rebuildWindowMenu() {
