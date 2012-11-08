@@ -30,9 +30,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
+import javax.swing.AbstractListModel;
 import javax.swing.Action;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -245,6 +247,19 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         }
         autoScroll.setSelected(actions.sketch.isAutoScroll());
         
+        examplesList.setCellRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Component comp = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if(value != null && value instanceof Example) {
+                    Example ex = (Example) value;
+                    JLabel label = (JLabel) comp;
+                    label.setText(ex.getName());
+                }
+                return comp;
+            }
+            
+        });
     }
 
     private void rebuildWindowMenu() {
@@ -486,8 +501,17 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         serialRateCombo = new javax.swing.JComboBox();
         serialPortLabel = new javax.swing.JLabel();
         autoScroll = new javax.swing.JCheckBox();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
         helpScroll = new javax.swing.JScrollPane();
         helpPane = new javax.swing.JEditorPane();
+        jPanel2 = new javax.swing.JPanel();
+        searchField = new javax.swing.JTextField();
+        jSplitPane1 = new javax.swing.JSplitPane();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        examplesList = new javax.swing.JList();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        exampleDescription = new javax.swing.JEditorPane();
+        jButton2 = new javax.swing.JButton();
         jToolBar1 = new javax.swing.JToolBar();
         checkButton = new javax.swing.JButton();
         runButton = new javax.swing.JButton();
@@ -524,7 +548,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        masterSplit.setDividerLocation(500);
+        masterSplit.setDividerLocation(400);
         masterSplit.setResizeWeight(1.0);
 
         editorSplit.setDividerLocation(200);
@@ -580,19 +604,19 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
                         .add(serialPortLabel))
                     .add(autoScroll))
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 359, Short.MAX_VALUE)
+                .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 259, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 192, Short.MAX_VALUE)
+            .add(jScrollPane3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 188, Short.MAX_VALUE)
             .add(jPanel1Layout.createSequentialGroup()
                 .add(serialActive)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(serialRateCombo, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(serialPortLabel)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 51, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 75, Short.MAX_VALUE)
                 .add(autoScroll)
                 .addContainerGap())
         );
@@ -607,7 +631,61 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         helpPane.setText("<html>\n  <head>\n\n  </head>\n  <body>\n<h3>Help and Info</h3>\n    <p style=\"margin-top: 0\">\n       <b>This</b> is real help text.\n    </p>\n  </body>\n</html>\n");
         helpScroll.setViewportView(helpPane);
 
-        masterSplit.setRightComponent(helpScroll);
+        jTabbedPane1.addTab("Help", helpScroll);
+
+        searchField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchFieldActionPerformed(evt);
+            }
+        });
+
+        jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+
+        examplesList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                examplesListValueChanged(evt);
+            }
+        });
+        jScrollPane2.setViewportView(examplesList);
+
+        jSplitPane1.setTopComponent(jScrollPane2);
+
+        exampleDescription.setContentType("text/html"); // NOI18N
+        jScrollPane4.setViewportView(exampleDescription);
+
+        jSplitPane1.setRightComponent(jScrollPane4);
+
+        jButton2.setText("Clone");
+
+        org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jPanel2Layout.createSequentialGroup()
+                        .add(searchField)
+                        .addContainerGap())
+                    .add(jSplitPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .add(jPanel2Layout.createSequentialGroup()
+                        .add(0, 101, Short.MAX_VALUE)
+                        .add(jButton2))))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+            .add(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .add(searchField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jSplitPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jButton2))
+        );
+
+        jTabbedPane1.addTab("Examples", jPanel2);
+
+        masterSplit.setRightComponent(jTabbedPane1);
 
         jToolBar1.setFloatable(false);
         jToolBar1.setRollover(true);
@@ -760,14 +838,14 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jToolBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .add(masterSplit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 661, Short.MAX_VALUE)
+            .add(masterSplit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 619, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .add(jToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(masterSplit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE))
+                .add(masterSplit))
         );
 
         pack();
@@ -819,6 +897,35 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     private void serialRateComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serialRateComboActionPerformed
         actions.sketch.setSerialRate(Global.SERIAL_RATE_INTS[serialRateCombo.getSelectedIndex()]);
     }//GEN-LAST:event_serialRateComboActionPerformed
+
+    private void searchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchFieldActionPerformed
+        Util.p("Searching");
+        final List<Example> examples = Global.getGlobal().findExamplesByText(searchField.getText());
+        AbstractListModel<Example> model = new AbstractListModel<Example>() {
+            @Override
+            public int getSize() {
+                return examples.size();
+            }
+
+            @Override
+            public Example getElementAt(int index) {
+                return examples.get(index);
+            }
+        };
+        examplesList.setModel(model);
+    }//GEN-LAST:event_searchFieldActionPerformed
+
+    private void examplesListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_examplesListValueChanged
+        if(examplesList.getSelectedValue() == null) return;
+        Util.p("selection changed");
+        Example ex = (Example) examplesList.getSelectedValue();
+        StringBuffer desc = new StringBuffer();
+        desc.append("<html><body>");
+        desc.append("<h1>"+ex.name+"</h1>");
+        desc.append("<p>"+ex.description+"</p>");
+        desc.append("</body></html>");
+        exampleDescription.setText(desc.toString());
+    }//GEN-LAST:event_examplesListValueChanged
 
 
     private void updateTheme(ColorTheme theme, JEditorPane pane) {
@@ -949,9 +1056,12 @@ Style.WARNING 0xCC0000, 0
     private javax.swing.JMenuItem cutItem;
     private javax.swing.JMenuItem darkThemeItem;
     private javax.swing.JSplitPane editorSplit;
+    private javax.swing.JEditorPane exampleDescription;
+    private javax.swing.JList examplesList;
     private javax.swing.JEditorPane helpPane;
     private javax.swing.JScrollPane helpScroll;
     private javax.swing.JMenuItem indentMenuItem;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
@@ -959,9 +1069,14 @@ Style.WARNING 0xCC0000, 0
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JToolBar.Separator jSeparator1;
+    private javax.swing.JSplitPane jSplitPane1;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JMenuItem lightThemeItem;
     private javax.swing.JSplitPane masterSplit;
@@ -975,6 +1090,7 @@ Style.WARNING 0xCC0000, 0
     private javax.swing.JToggleButton rightToggle;
     private javax.swing.JButton runButton;
     private javax.swing.JMenuItem saveMenuItem;
+    private javax.swing.JTextField searchField;
     private javax.swing.JMenuItem selectAll;
     private javax.swing.JToggleButton serialActive;
     private javax.swing.JTextArea serialConsole;

@@ -15,4 +15,8 @@ public class Example {
     Set<String> keywords = new HashSet<>();
     String name = "";
     String description = "";
+
+    String getName() {
+        return name;
+    }
 }

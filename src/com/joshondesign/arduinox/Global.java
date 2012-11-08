@@ -435,4 +435,8 @@ public class Global {
         return null;
     }
 
+    List<Example> findExamplesByText(String text) {
+        return examples;
+    }
+
 }
