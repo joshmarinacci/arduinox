@@ -4,6 +4,7 @@
  */
 package com.joshondesign.arduinox;
 
+import com.joshondesign.arduino.common.Util;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,9 @@ class SerialPort {
     }
 
     void lock() {
+        Util.p("locking the port. notifying");
         for(PortChange l : listeners) {
+            Util.p("notified");
             l.lock();
         }
     }

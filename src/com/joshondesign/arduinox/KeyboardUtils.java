@@ -32,12 +32,12 @@ public class KeyboardUtils {
         
         
         for(KeyStroke stroke : pane.getKeymap().getBoundKeyStrokes()) {
-            Util.p("stroke = " + stroke);
+//            Util.p("stroke = " + stroke);
         }
         
         keys = pane.getKeymap();
         
-        Util.p("e = " + keys.getAction(KeyStroke.getKeyStroke("control E")));
+//        Util.p("e = " + keys.getAction(KeyStroke.getKeyStroke("control E")));
         
         bind("control P",DefaultEditorKit.upAction);
         bind("control N",DefaultEditorKit.downAction);
@@ -49,7 +49,7 @@ public class KeyboardUtils {
         
         
         for(Action a : pane.getKeymap().getBoundActions()) {
-            Util.p("bound action: " + a.getValue(Action.NAME) + " " + a.getValue(Action.ACCELERATOR_KEY));
+            //Util.p("bound action: " + a.getValue(Action.NAME) + " " + a.getValue(Action.ACCELERATOR_KEY));
         }
         
     }
@@ -60,11 +60,11 @@ public class KeyboardUtils {
     }
 
     static void setup(Configuration config) {
-        Util.p("config");
+        //Util.p("config");
         List<String> keys = new ArrayList<String>(config.keySet());
         Collections.sort(keys);
         for(String key : keys) {
-            Util.p(key + " " + config.get(key));
+            //Util.p(key + " " + config.get(key));
         }
         config.put("Action.quick-find", "jsyntaxpane.actions.QuickFindAction, meta F");
         config.put("Action.goto-line",  "jsyntaxpane.actions.GotoLineAction, meta G");

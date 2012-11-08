@@ -75,31 +75,32 @@ public class Actions  {
     ColorTheme getCurrentTheme() {
         return this.theme;
     }
-                class CompilerOutput implements OutputListener {
+    
+    class CompilerOutput implements OutputListener {
 
-                    public CompilerOutput() {
-                    }
+        public CompilerOutput() {
+        }
 
-                    @Override
-                    public void log(String string) {
-                        Actions.this.log("==== " + string);
-                    }
+        @Override
+        public void log(String string) {
+            Actions.this.log("==== " + string);
+        }
 
-                    @Override
-                    public void stdout(String string) {
-                        Actions.this.log(string);
-                    }
+        @Override
+        public void stdout(String string) {
+            Actions.this.log(string);
+        }
 
-                    @Override
-                    public void stderr(String string) {
-                        Actions.this.log("ERROR:" + string);
-                    }
+        @Override
+        public void stderr(String string) {
+            Actions.this.log("ERROR:" + string);
+        }
 
-                    @Override
-                    public void exec(String string) {
-                        Actions.this.log(string);
-                    }
-                }
+        @Override
+        public void exec(String string) {
+            Actions.this.log(string);
+        }
+    }
     
     Action runAction = new AbstractAction("Run") {
         @Override

@@ -214,6 +214,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         if(actions.sketch.getCurrentPort() == null && !Global.getGlobal().getPorts().isEmpty()) {
             actions.sketch.setCurrentPort(Global.getGlobal().getPorts().get(0));
         }
+        actions.sketch.getCurrentPort().addListener(this);
         
         rebuildWindowMenu();
         //register to listen for changes
@@ -279,10 +280,12 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
 
     @Override
     public void lock() {
+        Util.p("locking the port");
         serialActive.setEnabled(false);
         serialActive.setText("Uploading...");
         serialRateCombo.setEnabled(false);
         if(serial != null) {
+            Util.p("displosing of the current serial");
             serial.dispose();
             serial = null;
         }
@@ -303,12 +306,13 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         serialActive.setText("Connect");
         serialRateCombo.setEnabled(true);
         serial.dispose();
+        serial = null;
     }
 
     private void connect(SerialPort port) {
         try {
             connected = true;
-            serialActive.setText("Disconnect");
+            serialActive.setText("Connected");
             serialRateCombo.setEnabled(false);
             serial = new Serial(port.portName, 9600, 'N', 8, 1.0f);
             serial.addListener(new MessageConsumer() {
@@ -882,6 +886,8 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     private void serialActiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serialActiveActionPerformed
         SerialPort port = actions.sketch.getCurrentPort();
         if(port != null) {
+            Util.p("listening to the port");
+            port.addListener(this);
             if(!serialActive.isSelected()) {
                 disconnect();
             } else {
