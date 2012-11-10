@@ -110,6 +110,8 @@ public class Global {
             CommPortIdentifier port = (CommPortIdentifier) enumeration.nextElement();
             SerialPort pt = new SerialPort();
             pt.portName = port.getName();
+            if(pt.portName == null) pt.portName = port.toString();
+            pt.shortName = pt.portName;
             ports.add(pt);
         }
         
@@ -136,7 +138,7 @@ public class Global {
         Iterator<SerialPort> it = ports.iterator();
         while(it.hasNext()) {
             SerialPort port = it.next();
-            if(port.shortName.toLowerCase().contains("bluetooth")) it.remove();
+            if(port.shortName != null && port.shortName.toLowerCase().contains("bluetooth")) it.remove();
         }
         
         for(SerialPort port : ports) {
@@ -174,7 +176,7 @@ public class Global {
         return examples;
     }
     
-    
+            
     private List<Device> scanForDevices() {
         List<Device> devices  = new ArrayList<>();
         try {
@@ -339,10 +341,16 @@ public class Global {
 
     void setArduinoDir(File arduinoPath) {
         this.arduinoDir = arduinoPath;
+        if(Util.isMacOSX()) {
+            this.arduinoDir = new File(arduinoPath,"Contents/Resources/Java");
+        }
         saveSettings();
     }
     
     File getDocumentsDir() {
+        if(Util.isWindows()) {
+            return new File(System.getProperty("user.home"),"My Documents/Arduino");
+        }
         return new File(System.getProperty("user.home"),"Documents/Arduino");
     }
 
@@ -430,10 +438,8 @@ public class Global {
             ex.name = e.attr("name");
             for(Elem k : e.xpath("keyword")) {
                 ex.keywords.add(k.text().toLowerCase());
-                Util.p("added keyword: " + k.text().toLowerCase());
             }
             ex.description = e.xpathString("description/text()");
-            Util.p("parsed example: " + ex.name);
             return ex;
         } catch (Exception ex) {
             Logger.getLogger(Global.class.getName()).log(Level.SEVERE, null, ex);
