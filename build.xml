@@ -72,6 +72,19 @@
 
     -->
     
+<target name="win-bundle">
+    <taskdef name='appbundler' 
+        classname='com.joshondesign.appbundler.BundlerTask'
+        classpath='build/classes;lib/XMLLib.jar'/>
+        
+    <appbundler
+        bundle="bundle.xml"
+        target="win"
+        destdir="dist"
+        libdir="lib"
+        />
+
+</target>
     
 <target name="mac-bundle">
     <!-- Import the AppBundlerTaks from ant lib directory -->
