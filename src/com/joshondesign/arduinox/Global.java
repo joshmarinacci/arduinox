@@ -107,6 +107,7 @@ public class Global {
             CommPortIdentifier port = (CommPortIdentifier) enumeration.nextElement();
             SerialPort pt = new SerialPort();
             pt.portName = port.getName();
+            pt.shortName = pt.portName;
             ports.add(pt);
         }
         
