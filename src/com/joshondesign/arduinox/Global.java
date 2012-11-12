@@ -161,10 +161,9 @@ public class Global {
     private List<Example> scanForExamples() {
         List<Example> examples = new ArrayList<>();
         try {
-            File basedir = new File(getDocumentsDir(),"arduino-resources");
-            File exdir = new File(basedir,"examples/");
+            File exdir = new File(getResourcesDir(),"examples/");
             Util.p("basedir = " + exdir.getCanonicalPath());
-            scanForExamples(basedir,examples);
+            scanForExamples(exdir,examples);
         } catch (IOException ex) {
             Logger.getLogger(Global.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -175,7 +174,7 @@ public class Global {
     private List<Device> scanForDevices() {
         List<Device> devices  = new ArrayList<>();
         try {
-            File basedir = new File(getDocumentsDir(),"arduino-resources");
+            File basedir = getResourcesDir();
             Util.p("resources dir = " + basedir.getCanonicalPath());
             for(File xml : new File(basedir,"hardware/boards/").listFiles()) {
                 Util.p("parsing: " + xml.getCanonicalPath());
@@ -464,6 +463,14 @@ public class Global {
 
     List<Example> getExamples() {
         return this.examples;
+    }
+
+    private File getResourcesDir() {
+        String resourcesprop = System.getProperty("com.joshondesign.arduinox.resourcespath");
+        if(resourcesprop != null) {
+            return new File(resourcesprop);
+        }
+        return new File(toolchainDir,"arduino-resources");
     }
 
 }
