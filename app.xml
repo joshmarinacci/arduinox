@@ -1,0 +1,9 @@
+<app name="ArduinoX">
+    <jar name="ArduinoX.jar" main-class="com.joshondesign.arduinox.Start"/>
+    <jar name="RXTXcomm.jar"/>
+    <jar name="arduinocompile.jar"/>
+    <jar name="jsyntaxpane-0.9.6.jar"/>
+    <jar name="swing-layout-1.0.4.jar"/>
+    <jar name="XMLLib.jar"/>
+    <native name="rxtx"/>
+</app>

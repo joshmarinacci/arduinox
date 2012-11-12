@@ -215,7 +215,9 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         if(actions.sketch.getCurrentPort() == null && !Global.getGlobal().getPorts().isEmpty()) {
             actions.sketch.setCurrentPort(Global.getGlobal().getPorts().get(0));
         }
-        actions.sketch.getCurrentPort().addListener(this);
+        if(actions.sketch.getCurrentPort() != null) {
+            actions.sketch.getCurrentPort().addListener(this);
+        }
         
         rebuildWindowMenu();
         //register to listen for changes

@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<project default="help">
+
+    <target name="help">
+        
+    </target>
+    
+    <target name="clean">
+        <delete dir="build"/>
+        <delete dir="dist"/>
+    </target>
+
+
+    <target name="init">
+        <property name="app.name" value="ArduinoX"/>
+	</target>
+	
+    <target name='build-ide'>
+        
+    </target>
+    
+    <target name="build-mac" depends="build-ide">
+        <!-- build the mac bundle -->
+        <java
+            classpath="lib/AppBundler.jar;lib/XMLLib.jar"
+            classname="com.joshondesign.appbundler.Bundler" fork="true">
+
+            <arg value="--file=app.xml"/>
+            <arg value="--target=onejar"/>
+            <arg value="--outdir=dister/"/>
+            <arg value="--jardir=dist/"/>
+            <arg value="--jardir=dist/lib/"/>
+            <arg value="--jardir=lib/"/>
+        </java>
+
+        <!--
+        <zip destfile="dister/${app.name}.app.zip">
+            <zipfileset dir="dister/mac">
+                <include name="${app.name}.app"/>
+                <include name="${app.name}.app/**"/>
+                <exclude name="${app.name}.app/Contents/MacOS/JavaApplicationStub"/>
+            </zipfileset>
+            <zipfileset dir="dister/mac" includes="${app.name}.app/Contents/MacOS/JavaApplicationStub" filemode="755"/>
+        </zip>        
+        -->
+    </target>
+    
+</project>

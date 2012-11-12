@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
@@ -43,8 +44,8 @@ public class Global {
     private final List<SerialPort> ports;
     private final List<Device> devices;
     private Device extracore;
-    private File arduinoDir;
-    private String ARDUINO_IDE_PATH = "ARDUINO_IDE_PATH";
+    private File toolchainDir;
+    private String TOOLCHAIN_DIR = "TOOLCHAIN_DIR";
     private String RECENT_SKETCHES = "RECENT_SKETCHES";
     
     public static final int SERIAL_RATE_INTS[] = {
@@ -333,12 +334,12 @@ public class Global {
         return this.devices;
     }
     
-    File getArduinoDir() {
-        return arduinoDir;
+    File getToolchainDir() {
+        return toolchainDir;
     }
 
-    void setArduinoDir(File arduinoPath) {
-        this.arduinoDir = arduinoPath;
+    void setToolchainDir(File arduinoPath) {
+        this.toolchainDir = arduinoPath;
         saveSettings();
     }
     
@@ -349,7 +350,6 @@ public class Global {
     private void saveSettings() {
         try {
             Properties props = new Properties();
-            props.setProperty(ARDUINO_IDE_PATH, this.arduinoDir.getAbsolutePath());
             StringBuffer sb = new StringBuffer();
             for(String s : recentSketches) {
                 sb.append(s);
@@ -364,12 +364,22 @@ public class Global {
     }
 
     private void loadSettings() {
+//        for(Entry<Object,Object> item : System.getProperties().entrySet()) {
+//            Util.p(item.getKey() + " " + item.getValue());
+//        }
+        
+        Util.p("the toolchain path = " + System.getProperty("com.joshondesign.arduinox.toolchainpath"));
+        String toolchainPath = System.getProperty("com.joshondesign.arduinox.toolchainpath");
+        if("uselibrary".equals(toolchainPath)) {
+            String librarypath = System.getProperty("java.library.path");
+            File contentsDir = new File(librarypath).getParentFile();
+            toolchainPath = new File(contentsDir,"toolchain").getAbsolutePath();
+        }
+        Util.p("final toochain path = " + toolchainPath);
+        this.setToolchainDir(new File(toolchainPath));
         try {
             Properties props = new Properties();
             props.loadFromXML(new FileInputStream("settings.xml"));
-            if(props.containsKey(ARDUINO_IDE_PATH)) {
-                this.arduinoDir = new File(props.getProperty(ARDUINO_IDE_PATH));
-            }
             recentUniqueSketches = new HashSet<>();
             if(props.containsKey(RECENT_SKETCHES)) {
                 String[] s = props.getProperty(RECENT_SKETCHES).split(",");

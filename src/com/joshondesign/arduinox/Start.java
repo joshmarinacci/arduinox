@@ -66,7 +66,7 @@ public class Start {
                     
                     
                     Global global = Global.getGlobal();
-                    if(global.getArduinoDir() == null) {
+                    if(global.getToolchainDir() == null) {
                         JDialog dialog = new JDialog();
                         JPanel panel = new JPanel();
                         SelectIDEDialog p = new SelectIDEDialog();

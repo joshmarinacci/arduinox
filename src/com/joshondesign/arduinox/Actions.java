@@ -58,7 +58,7 @@ public class Actions  {
                         CompileTask task = new CompileTask();
                         task.setSketchDir(sketch.getDirectory());
                         task.setUserLibrariesDir(new File(Global.getGlobal().getDocumentsDir(),"Libraries"));
-                        task.setArduinoRoot(new File(Global.getGlobal().getArduinoDir(),"Contents/Resources/Java"));
+                        task.setArduinoRoot(Global.getGlobal().getToolchainDir());
                         task.setDevice(sketch.getCurrentDevice());
                         task.setOutputListener(new CompilerOutput());
                         task.assemble();
@@ -114,7 +114,7 @@ public class Actions  {
                         CompileTask task = new CompileTask();
                         task.setSketchDir(sketch.getDirectory());
                         task.setUserLibrariesDir(new File(Global.getGlobal().getDocumentsDir(),"Libraries"));
-                        task.setArduinoRoot(new File(Global.getGlobal().getArduinoDir(),"Contents/Resources/Java"));
+                        task.setArduinoRoot(Global.getGlobal().getToolchainDir());
                         task.setUploadPortPath(sketch.getCurrentPort().portName);
                         task.setDevice(sketch.getCurrentDevice());
                         task.setOutputListener(new CompilerOutput());

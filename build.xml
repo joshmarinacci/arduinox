@@ -115,8 +115,23 @@
         <option value="-Dcom.apple.macos.useScreenMenuBar=true"/>
         <option value="-Dcom.apple.mrj.application.apple.menu.about.name=MyApp"/>
         <option value="-Dcom.apple.smallTabs=true"/>
+        
+        <!-- path to where the native bits will be -->
+        <option value="-Dcom.joshondesign.arduinox.toolchainpath=uselibrary"/>
         <option value="-Xmx1024M"/>
     </bundleapp>
+    
+    
+    <!-- 
+    copy avr toolchain to be inside of the app bundle
+    
+    -->
+    <mkdir dir='ArduinoX.app/Contents/toolchain'/>
+    <copy todir="ArduinoX.app/Contents/toolchain">
+        <fileset dir="../toolchains/macosx_universal/">
+            <include name='**'/>
+        </fileset>        
+    </copy>
 </target>   
 
 </project>

@@ -125,7 +125,7 @@ public class SelectIDEDialog extends javax.swing.JPanel {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         if(arduinoPath != null && arduinoPath.exists()) {
-            Global.getGlobal().setArduinoDir(arduinoPath);
+            Global.getGlobal().setToolchainDir(arduinoPath);
             SwingUtilities.getWindowAncestor(this).dispose();
             Start.openLastSketch();
         }
