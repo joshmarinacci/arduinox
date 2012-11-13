@@ -360,9 +360,9 @@ public class Global {
     }
 
     private void loadSettings() {
-//        for(Entry<Object,Object> item : System.getProperties().entrySet()) {
-//            Util.p(item.getKey() + " " + item.getValue());
-//        }
+        for(Entry<Object,Object> item : System.getProperties().entrySet()) {
+            Util.p(item.getKey() + " " + item.getValue());
+        }
         
         Util.p("the toolchain path = " + System.getProperty("com.joshondesign.arduinox.toolchainpath"));
         String toolchainPath = System.getProperty("com.joshondesign.arduinox.toolchainpath");
@@ -370,6 +370,9 @@ public class Global {
             String librarypath = System.getProperty("java.library.path");
             File contentsDir = new File(librarypath).getParentFile();
             toolchainPath = new File(contentsDir,"toolchain").getAbsolutePath();
+        }
+        if(toolchainPath == null) {
+            toolchainPath = System.getProperty("user.dir");
         }
         Util.p("final toochain path = " + toolchainPath);
         this.setToolchainDir(new File(toolchainPath));
