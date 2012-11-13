@@ -72,7 +72,17 @@
 
     -->
     
-<target name="win-bundle" depends="jar">
+<target name="bundle-settings">
+    <property name="toolchain.dir" value="/Users/josh/projects/ArduinoIDE/toolchains"/>
+    <property name="mac.jdk" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_09.jdk/"/>
+    <property name="win.jdk" value="C:\Program Files\Java\jre7"/>
+    <property name="resources.dir" value="/Users/josh/Documents/Arduino/arduino-resources/"/>
+    <!--
+    <property name="toolchain.dir" value="/home/joshy/hudson_libs/arduino_toolchains"/>
+    -->
+</target>
+
+<target name="win-bundle" depends="jar, bundle-settings">
     <mkdir dir='dist'/>
     <mkdir dir='dist/win'/>
     <java
@@ -84,8 +94,6 @@
         <arg value="--jardir=dist/lib/"/>
         <arg value="--jardir=dist/"/>
     </java>        
-
-
 <!--
 copy in a jre
 copy over toolchain parts
@@ -94,7 +102,7 @@ copy over resources parts
 -->
 
     <copy todir="dist/win/jre">
-        <fileset dir="C:\Program Files\Java\jre7">
+        <fileset dir="${win.jdk}">
             <include name="**"/>
         </fileset>
     </copy>
@@ -106,7 +114,7 @@ copy over resources parts
     </copy>
     
     <copy todir="dist/win/arduino-resources">
-        <fileset dir="../arduino-resources">
+        <fileset dir="${resources.dir}">
             <include name="**"/>
         </fileset>
     </copy>
@@ -114,14 +122,14 @@ copy over resources parts
     <copy todir="dist/win/lib" file="lib/win64/rxtxSerial.dll"/>
 </target>
     
-<target name="mac-bundle">
+<target name="mac-bundle" depends="bundle-settings, jar">
+    <mkdir dir="dist"/>
+
     <!-- Import the AppBundlerTaks from ant lib directory -->
     <taskdef name="bundleapp" 
         classpath="appbundler_jn.jar"
         classname="com.oracle.appbundler.AppBundlerTask"/>
 
-    <property name="mac.jdk" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_09.jdk/"/>
-    
     <bundleapp outputdirectory="."
         name="ArduinoX"
         displayname="ArduinoX"
@@ -170,10 +178,6 @@ copy over resources parts
     copy avr toolchain to be inside of the app bundle
     
     -->
-    <property name="toolchain.dir" value="/Users/josh/projects/ArduinoIDE/toolchains"/>
-    <!--
-    <property name="toolchain.dir" value="/home/joshy/hudson_libs/arduino_toolchains"/>
-    -->
     
     <mkdir dir='ArduinoX.app/Contents/toolchain'/>
     <copy todir="ArduinoX.app/Contents/toolchain">
@@ -181,14 +185,14 @@ copy over resources parts
             <include name='**'/>
         </fileset>        
     </copy>
-    <!--
+    
     <mkdir dir='ArduinoX.app/Contents/toolchain/resources'/>
     <copy todir="ArduinoX.app/Contents/toolchain/resources">
-        <fileset dir="/Users/josh/Documents/Arduino/arduino-resources/">
+        <fileset dir="${resources.dir}">
             <include name='**'/>
         </fileset>        
     </copy>
-    -->
+    
 </target>   
 
 </project>
