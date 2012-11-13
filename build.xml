@@ -120,6 +120,8 @@ copy over resources parts
     </copy>
     
     <copy todir="dist/win/lib" file="lib/win64/rxtxSerial.dll"/>
+    <zip zipfile="dist/ArduinoX-win.zip" basedir="dist/" includes="win/**">        
+    </zip>
 </target>
 
     
@@ -194,6 +196,9 @@ copy over resources parts
             <include name='**'/>
         </fileset>        
     </copy>
+    
+    <zip zipfile="dist/mac/ArduinoX.zip" basedir="dist/mac/" includes="ArduinoX.app/**">        
+    </zip>
     
 </target>   
 
