@@ -121,6 +121,7 @@ copy over resources parts
     
     <copy todir="dist/win/lib" file="lib/win64/rxtxSerial.dll"/>
 </target>
+
     
 <target name="mac-bundle" depends="bundle-settings, jar">
     <mkdir dir="dist"/>
@@ -180,15 +181,15 @@ copy over resources parts
     
     -->
     
-    <mkdir dir='ArduinoX.app/Contents/toolchain'/>
-    <copy todir="ArduinoX.app/Contents/toolchain">
+    <mkdir dir='dist/mac/ArduinoX.app/Contents/toolchain'/>
+    <copy todir="dist/mac/ArduinoX.app/Contents/toolchain">
         <fileset dir="${toolchain.dir}/macosx_universal/">
             <include name='**'/>
         </fileset>        
     </copy>
     
-    <mkdir dir='ArduinoX.app/Contents/toolchain/resources'/>
-    <copy todir="ArduinoX.app/Contents/toolchain/resources">
+    <mkdir dir='dist/mac/ArduinoX.app/Contents/toolchain/resources'/>
+    <copy todir="dist/mac/ArduinoX.app/Contents/toolchain/resources">
         <fileset dir="${resources.dir}">
             <include name='**'/>
         </fileset>        
