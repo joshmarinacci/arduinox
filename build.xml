@@ -72,24 +72,52 @@
 
     -->
     
-<target name="win-bundle">
-    <taskdef name='appbundler' 
-        classname='com.joshondesign.appbundler.BundlerTask'
-        classpath='build/classes;lib/XMLLib.jar'/>
-        
-    <appbundler
-        bundle="bundle.xml"
-        target="win"
-        destdir="dist"
-        libdir="lib"
-        />
+<target name="win-bundle" depends="jar">
+    <mkdir dir='dist'/>
+    <mkdir dir='dist/win'/>
+    <java
+        classpath="appbundler_josh.jar;lib/XMLLib.jar"
+        classname="com.joshondesign.appbundler.Bundler" fork="true">
+        <arg value="--file=bundle.xml"/>
+        <arg value="--target=win"/>
+        <arg value="--outdir=dist"/>
+        <arg value="--jardir=dist/lib/"/>
+        <arg value="--jardir=dist/"/>
+    </java>        
 
+
+<!--
+copy in a jre
+copy over toolchain parts
+copy over the right serial native lib
+copy over resources parts
+-->
+
+    <copy todir="dist/win/jre">
+        <fileset dir="C:\Program Files\Java\jre7">
+            <include name="**"/>
+        </fileset>
+    </copy>
+    
+    <copy todir="dist/win">
+        <fileset dir="../toolchains/win64">
+            <include name="**"/>
+        </fileset>
+    </copy>
+    
+    <copy todir="dist/win/arduino-resources">
+        <fileset dir="../arduino-resources">
+            <include name="**"/>
+        </fileset>
+    </copy>
+    
+    <copy todir="dist/win/lib" file="lib/win64/rxtxSerial.dll"/>
 </target>
     
 <target name="mac-bundle">
     <!-- Import the AppBundlerTaks from ant lib directory -->
     <taskdef name="bundleapp" 
-        classpath="appbundler.jar"
+        classpath="appbundler_jn.jar"
         classname="com.oracle.appbundler.AppBundlerTask"/>
 
     <bundleapp outputdirectory="."

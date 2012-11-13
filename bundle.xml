@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+
+
+<app name="ArduinoX">
+    <jar name="ArduinoX.jar" main-class="com.joshondesign.arduinox.Start"/>
+    <jar name="RXTXcomm.jar"/>
+    <jar name="arduinocompile.jar"/>
+    <jar name="jsyntaxpane.jar"/>
+    <jar name="swing-layout-1.0.4.jar"/>
+    <jar name="XMLLib.jar"/>
+</app>
