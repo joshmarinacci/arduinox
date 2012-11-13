@@ -130,7 +130,8 @@ copy over resources parts
         classpath="appbundler_jn.jar"
         classname="com.oracle.appbundler.AppBundlerTask"/>
 
-    <bundleapp outputdirectory="."
+    <mkdir dir="dist/mac"/>
+    <bundleapp outputdirectory="dist/mac"
         name="ArduinoX"
         displayname="ArduinoX"
         identifier="com.joshondesign.arduinox.Start"
