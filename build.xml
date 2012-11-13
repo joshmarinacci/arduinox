@@ -198,6 +198,11 @@ copy over resources parts
     </copy>
     
     <zip zipfile="dist/mac/ArduinoX.zip" basedir="dist/mac/" includes="ArduinoX.app/**">        
+        <zipfileset dir="dist/mac">
+            <include name="ArduinoX.app/**"/>
+            <exclude name="ArduinoX.app/Contents/MacOS/JavaAppLauncher"/>
+        </zipfileset>
+        <zipfileset dir="dist/mac" includes="ArduinoX.app/Contents/MacOS/JavaAppLauncher" filemode="755"/>
     </zip>
     
 </target>   
