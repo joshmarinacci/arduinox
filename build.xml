@@ -197,7 +197,7 @@ copy over resources parts
         </fileset>        
     </copy>
     
-    <zip zipfile="dist/mac/ArduinoX.zip" basedir="dist/mac/" includes="ArduinoX.app/**">        
+    <zip zipfile="dist/mac/ArduinoX.zip">        
         <zipfileset dir="dist/mac">
             <include name="ArduinoX.app/**"/>
             <exclude name="ArduinoX.app/Contents/MacOS/JavaAppLauncher"/>

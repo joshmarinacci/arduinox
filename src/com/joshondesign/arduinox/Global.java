@@ -60,10 +60,10 @@ public class Global {
 
     private Global() {
         recentSketches = new ArrayList<>();
+        loadSettings();
         this.ports = scanForSerialPorts();
         this.devices = scanForDevices();
         this.examples = scanForExamples();
-        loadSettings();
     }
     
     
@@ -474,7 +474,7 @@ public class Global {
         if(resourcesprop != null) {
             return new File(resourcesprop);
         }
-        return new File(toolchainDir,"arduino-resources");
+        return new File(toolchainDir,"resources");
     }
 
 }
