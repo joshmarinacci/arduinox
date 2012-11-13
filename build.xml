@@ -113,7 +113,7 @@ copy over resources parts
         </fileset>
     </copy>
     
-    <copy todir="dist/win/arduino-resources">
+    <copy todir="dist/win/resources">
         <fileset dir="${resources.dir}">
             <include name="**"/>
         </fileset>
