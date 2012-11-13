@@ -170,18 +170,25 @@ copy over resources parts
     copy avr toolchain to be inside of the app bundle
     
     -->
+    <property name="toolchain.dir" value="/Users/josh/projects/ArduinoIDE/toolchains"/>
+    <!--
+    <property name="toolchain.dir" value="/home/joshy/hudson_libs/arduino_toolchains"/>
+    -->
+    
     <mkdir dir='ArduinoX.app/Contents/toolchain'/>
     <copy todir="ArduinoX.app/Contents/toolchain">
-        <fileset dir="../toolchains/macosx_universal/">
+        <fileset dir="${toolchain.dir}/macosx_universal/">
             <include name='**'/>
         </fileset>        
     </copy>
+    <!--
     <mkdir dir='ArduinoX.app/Contents/toolchain/resources'/>
     <copy todir="ArduinoX.app/Contents/toolchain/resources">
         <fileset dir="/Users/josh/Documents/Arduino/arduino-resources/">
             <include name='**'/>
         </fileset>        
     </copy>
+    -->
 </target>   
 
 </project>
