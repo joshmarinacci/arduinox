@@ -360,9 +360,9 @@ public class Global {
     }
 
     private void loadSettings() {
-        for(Entry<Object,Object> item : System.getProperties().entrySet()) {
-            Util.p(item.getKey() + " " + item.getValue());
-        }
+//        for(Entry<Object,Object> item : System.getProperties().entrySet()) {
+//            Util.p(item.getKey() + " " + item.getValue());
+//        }
         
         Util.p("the toolchain path = " + System.getProperty("com.joshondesign.arduinox.toolchainpath"));
         String toolchainPath = System.getProperty("com.joshondesign.arduinox.toolchainpath");
