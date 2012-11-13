@@ -75,7 +75,7 @@
 <target name="bundle-settings">
     <property name="toolchain.dir" value="/Users/josh/projects/ArduinoIDE/toolchains"/>
     <property name="mac.jdk" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_09.jdk/"/>
-    <property name="win.jdk" value="C:\Program Files\Java\jre7"/>
+    <property name="win.jdk" value="/Users/josh/projects/ArduinoIDE/toolchains/jre7"/>
     <property name="resources.dir" value="/Users/josh/Documents/Arduino/arduino-resources/"/>
     <!--
     <property name="toolchain.dir" value="/home/joshy/hudson_libs/arduino_toolchains"/>
@@ -108,7 +108,7 @@ copy over resources parts
     </copy>
     
     <copy todir="dist/win">
-        <fileset dir="../toolchains/win64">
+        <fileset dir="${toolchain.dir}/windows">
             <include name="**"/>
         </fileset>
     </copy>
