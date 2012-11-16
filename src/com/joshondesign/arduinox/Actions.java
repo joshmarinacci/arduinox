@@ -105,11 +105,15 @@ public class Actions  {
         @Override
         public void actionPerformed(ActionEvent e) {
             saveBuffers();
+            if(sketch.getCurrentPort() == null) {
+                log("ERROR: no serialport selected");
+                return;
+            }
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        log("Compiling");
+                        log("Compiling");                        
                         sketch.getCurrentPort().lock();
                         CompileTask task = new CompileTask();
                         task.setSketchDir(sketch.getDirectory());
