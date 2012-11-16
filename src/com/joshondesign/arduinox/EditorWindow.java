@@ -14,6 +14,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -74,7 +76,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     }
     
     
-    public EditorWindow(Actions actions) {
+    public EditorWindow(final Actions actions) {
         this.actions = actions;
         try {
             customFont = Font.createFont(Font.TRUETYPE_FONT, EditorWindow.class.getResourceAsStream("resources/SourceCodePro-Semibold.ttf"));
@@ -278,6 +280,42 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         };
         examplesList.setModel(model);
         
+        this.addWindowListener(new WindowListener() {
+
+            @Override
+            public void windowOpened(WindowEvent e) {
+            }
+
+            @Override
+            public void windowClosing(WindowEvent e) {
+                EditorWindow.this.setVisible(false);
+                EditorWindow.this.dispose();
+            }
+
+            @Override
+            public void windowClosed(WindowEvent e) {
+                Global.getGlobal().removeSketch(actions.sketch);
+                if(Global.getGlobal().getOpenSketchCount() <= 0) {
+                    actions.quitAction.actionPerformed(null);
+                }
+            }
+
+            @Override
+            public void windowIconified(WindowEvent e) {
+            }
+
+            @Override
+            public void windowDeiconified(WindowEvent e) {
+            }
+
+            @Override
+            public void windowActivated(WindowEvent e) {
+            }
+
+            @Override
+            public void windowDeactivated(WindowEvent e) {
+            }
+        });
     }
 
     private void rebuildWindowMenu() {
@@ -566,8 +604,6 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         darkThemeItem = new javax.swing.JMenuItem();
         windowMenu = new javax.swing.JMenu();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
         masterSplit.setDividerLocation(400);
         masterSplit.setResizeWeight(1.0);
         masterSplit.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
@@ -707,7 +743,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
                         .addContainerGap())
                     .add(jSplitPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .add(jPanel2Layout.createSequentialGroup()
-                        .add(0, 101, Short.MAX_VALUE)
+                        .add(0, 0, Short.MAX_VALUE)
                         .add(jButton2))))
         );
         jPanel2Layout.setVerticalGroup(
@@ -883,7 +919,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
             .add(layout.createSequentialGroup()
                 .add(jToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(masterSplit))
+                .add(masterSplit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE))
         );
 
         pack();

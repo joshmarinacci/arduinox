@@ -81,6 +81,11 @@ public class Global {
         saveSettings();
         pcs.firePropertyChange("sketches", sketches, sketch);
     }
+    
+    void removeSketch(Sketch sketch) {
+        this.sketches.remove(sketch);
+        pcs.firePropertyChange("sketches", sketches, null);
+    }
 
     Iterable<Sketch> getSketches() {
         return sketches;
@@ -475,6 +480,10 @@ public class Global {
             return new File(resourcesprop);
         }
         return new File(toolchainDir,"resources");
+    }
+
+    int getOpenSketchCount() {
+        return this.sketches.size();
     }
 
 }
