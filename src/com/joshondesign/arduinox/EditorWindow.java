@@ -316,6 +316,8 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
             public void windowDeactivated(WindowEvent e) {
             }
         });
+        
+        this.setTitle(actions.sketch.getName());
     }
 
     private void rebuildWindowMenu() {

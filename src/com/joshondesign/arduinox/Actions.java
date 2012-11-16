@@ -343,6 +343,7 @@ public class Actions  {
     }
     
     private void quit() {
+        sketch.saveSettings();
         System.exit(0);
     }
     
