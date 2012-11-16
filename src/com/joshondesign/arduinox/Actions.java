@@ -252,6 +252,12 @@ public class Actions  {
                         
                 File sketchDir = new File(Global.getGlobal().getDocumentsDir(),name);
                 sketchDir.mkdir();
+                File mainfile = new File(sketchDir,sketchDir.getName()+".ino");
+                if(!mainfile.exists()) {
+                    String text = Util.toString(Actions.class.getResource("resources/newsketch.ino"));
+                    Util.toFile(text, mainfile);
+                }
+
                 Sketch sketch  = new Sketch(sketchDir);
                 Global.getGlobal().addSketch(sketch);
                         
