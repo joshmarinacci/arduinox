@@ -3,6 +3,7 @@ package com.joshondesign.arduinox;
 import com.joshondesign.arduino.common.CompileException;
 import com.joshondesign.arduino.common.Device;
 import com.joshondesign.arduino.common.MessageConsumer;
+import com.joshondesign.arduino.common.OutputListener;
 import com.joshondesign.arduino.common.Preferences;
 import com.joshondesign.arduino.common.Serial;
 import com.joshondesign.arduino.common.SerialException;
@@ -95,6 +96,30 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         checkButton.setAction(actions.checkAction);
         runButton.setAction(actions.runAction);
 
+        actions.addLogListener(new OutputListener() {
+
+            @Override
+            public void log(String string) {
+                console.append("INFO: "+string+"\n");
+            }
+
+            @Override
+            public void exec(String string) {
+                console.append("EXEC: " + string+"\n");
+            }
+
+            @Override
+            public void stdout(String string) {
+                console.append("STDOUT: " +string+"\n");
+            }
+
+            @Override
+            public void stderr(String string) {
+                console.append("STDERR:  "+string+"\n");
+            }
+        });
+        console.setAutoscrolls(true);
+        /*
         actions.addLogListener(new LogListener() {
             @Override
             public void log(String str) {
@@ -119,7 +144,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
                             );
                 }
             }
-        });
+        });*/
 
         actions.pcs.addPropertyChangeListener("fontsize", new PropertyChangeListener() {
             @Override

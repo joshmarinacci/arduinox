@@ -12,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -28,7 +30,7 @@ import javax.swing.SwingUtilities;
  * @author josh
  */
 public class Actions  {
-    private List<LogListener> logListeners = new ArrayList<>();
+    private List<OutputListener> logListeners = new ArrayList<>();
     final Sketch sketch;
     
     private float fontSize = 12f;
@@ -77,6 +79,7 @@ public class Actions  {
                     compileInProcess = false;
                 }
 
+
             }).start();
         }
     };
@@ -84,6 +87,19 @@ public class Actions  {
     ColorTheme getCurrentTheme() {
         return this.theme;
     }
+    
+    private CompilerOutput compilerOutput = new CompilerOutput();
+    private void log(Exception ex) {
+        compilerOutput.log("error!");
+        compilerOutput.log(ex.getMessage());
+        StringWriter sw = new StringWriter();
+        ex.printStackTrace(new PrintWriter(sw));
+        compilerOutput.log(sw.toString());
+    }
+    private void log(String message) {
+        compilerOutput.log(message);
+    }
+    
     class CompilerOutput implements OutputListener {
 
         public CompilerOutput() {
@@ -91,22 +107,30 @@ public class Actions  {
 
         @Override
         public void log(String string) {
-            Actions.this.log("==== " + string);
+            for(OutputListener ol : logListeners) {
+                ol.log(string);
+            }
         }
 
         @Override
         public void stdout(String string) {
-            Actions.this.log(string);
+            for(OutputListener ol : logListeners) {
+                ol.stdout(string);
+            }
         }
 
         @Override
         public void stderr(String string) {
-            Actions.this.log("ERROR:" + string);
+            for(OutputListener ol : logListeners) {
+                ol.stderr(string);
+            }
         }
 
         @Override
         public void exec(String string) {
-            Actions.this.log(string);
+            for(OutputListener ol : logListeners) {
+                ol.exec(string);
+            }
         }
     }
     
@@ -135,7 +159,7 @@ public class Actions  {
                         task.setArduinoRoot(Global.getGlobal().getToolchainDir());
                         task.setUploadPortPath(sketch.getCurrentPort().portName);
                         task.setDevice(sketch.getCurrentDevice());
-                        task.setOutputListener(new CompilerOutput());
+                        task.setOutputListener(compilerOutput);
                         task.assemble();
                         log("downloading to the device");
                         task.download();
@@ -152,6 +176,7 @@ public class Actions  {
                 }
             }).start();
         }
+
     };
     
     Action quitAction = new AbstractAction("Quit") {
@@ -321,31 +346,8 @@ public class Actions  {
                 new ImageIcon(Actions.class.getResource("resources/noun_project_2873.png")));
     }
     
-    void log(final String str) {
-        Util.p(str);
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                for(LogListener ll : logListeners) {
-                    ll.log(str);
-                }
-            }
-        });
-    }
-    void log(final Exception ex) {
-        Util.p(ex.getMessage());
-        ex.printStackTrace();
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                for(LogListener ll : logListeners) {
-                    ll.log(ex);
-                }
-            }
-        });
-    }
     
-    void addLogListener(LogListener listener) {
+    void addLogListener(OutputListener listener) {
         this.logListeners.add(listener);
     }
     
