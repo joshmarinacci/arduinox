@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -36,6 +37,7 @@ public class Actions  {
     private ColorTheme LIGHT_THEME;
     private ColorTheme theme;
 
+    boolean compileInProcess = false;
     
     
     public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
@@ -50,6 +52,10 @@ public class Actions  {
     Action checkAction = new AbstractAction("Check") {
         @Override
         public void actionPerformed(ActionEvent e) {
+            if(compileInProcess)return;
+            compileInProcess = true;
+            this.setEnabled(false);
+            runAction.setEnabled(false);
             saveBuffers();
             new Thread(new Runnable() {
                 @Override
@@ -66,6 +72,9 @@ public class Actions  {
                         log(ex);
                         Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                    setEnabled(true);
+                    runAction.setEnabled(true);
+                    compileInProcess = false;
                 }
 
             }).start();
@@ -101,6 +110,7 @@ public class Actions  {
         }
     }
     
+    
     Action runAction = new AbstractAction("Run") {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -109,6 +119,10 @@ public class Actions  {
                 log("ERROR: no serialport selected");
                 return;
             }
+            if(compileInProcess)return;
+            compileInProcess = true;
+            this.setEnabled(false);
+            checkAction.setEnabled(false);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -132,6 +146,9 @@ public class Actions  {
                         log(ex);
                         Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                    setEnabled(true);
+                    checkAction.setEnabled(true);
+                    compileInProcess = false;
                 }
             }).start();
         }
@@ -297,6 +314,11 @@ public class Actions  {
         DARK_THEME = new ColorTheme();
         DARK_THEME.backgroundColor = Color.DARK_GRAY;
         theme = STANDARD_THEME;
+        
+        checkAction.putValue(Action.LARGE_ICON_KEY,
+                new ImageIcon(Actions.class.getResource("resources/noun_project_1307.png")));
+        runAction.putValue(Action.LARGE_ICON_KEY,
+                new ImageIcon(Actions.class.getResource("resources/noun_project_2873.png")));
     }
     
     void log(final String str) {

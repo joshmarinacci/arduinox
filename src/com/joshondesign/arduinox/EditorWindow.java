@@ -92,8 +92,8 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
             createNewTab(tabbedPane,buffer);
         }
         //setup toolbar
-        checkButton.addActionListener(actions.checkAction);
-        runButton.addActionListener(actions.runAction);
+        checkButton.setAction(actions.checkAction);
+        runButton.setAction(actions.runAction);
 
         actions.addLogListener(new LogListener() {
             @Override
@@ -391,7 +391,8 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         newSketchItem.addActionListener(actions.newAction);
         openSketchItem.addActionListener(actions.openAction);
         saveMenuItem.addActionListener(actions.saveAction);
-        checkMenuItem.addActionListener(actions.checkAction);
+//        checkMenuItem.addActionListener(actions.checkAction);
+        checkMenuItem.setAction(actions.checkAction);
         quitMenu.addActionListener(actions.quitAction);
         zoomInItem.addActionListener(actions.zoomInAction);
         zoomOutItem.addActionListener(actions.zoomOutAction);
