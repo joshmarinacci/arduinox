@@ -249,6 +249,7 @@ public class Actions  {
             try {
                 Util.p("creating a new sketch");
                 String name = JOptionPane.showInputDialog(null, "Name for your new sketch", "NewSketch1");
+                if(name == null || name.trim().equals("")) return;
                         
                 File sketchDir = new File(Global.getGlobal().getDocumentsDir(),name);
                 sketchDir.mkdir();
