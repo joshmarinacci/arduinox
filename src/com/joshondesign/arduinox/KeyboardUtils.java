@@ -23,7 +23,7 @@ public class KeyboardUtils {
     private static JEditorPane pane;
     private static Keymap keys;
     
-    static void setup(JEditorPane editorpane) {
+    static void setup(JEditorPane editorpane, Actions actions) {
         pane = editorpane;
         //Action upAction = pane.getActionMap().get(DefaultEditorKit.upAction);
         //Util.p("foo = " + DefaultEditorKit.upAction);
@@ -43,9 +43,11 @@ public class KeyboardUtils {
         bind("control N",DefaultEditorKit.downAction);
         bind("control F",DefaultEditorKit.forwardAction);
         bind("control B",DefaultEditorKit.backwardAction);
-        
+        bind("control D",DefaultEditorKit.deleteNextCharAction);
         bind("control A",DefaultEditorKit.beginLineAction);
         bind("control E",DefaultEditorKit.endLineAction);
+        bind("meta K",actions.checkAction);
+        bind("meta R",actions.runAction);
         
         
         for(Action a : pane.getKeymap().getBoundActions()) {
@@ -58,20 +60,23 @@ public class KeyboardUtils {
         Action act = pane.getActionMap().get(upAction);
         keys.addActionForKeyStroke(KeyStroke.getKeyStroke(name), act);
     }
+    private static void bind(String name, Action act) {
+        keys.addActionForKeyStroke(KeyStroke.getKeyStroke(name), act);
+    }
 
     static void setup(Configuration config) {
         //Util.p("config");
         List<String> keys = new ArrayList<String>(config.keySet());
         Collections.sort(keys);
         for(String key : keys) {
-            //Util.p(key + " " + config.get(key));
+            Util.p(key + " " + config.get(key));
         }
         config.put("Action.quick-find", "jsyntaxpane.actions.QuickFindAction, meta F");
         config.put("Action.goto-line",  "jsyntaxpane.actions.GotoLineAction, meta G");
         config.put("Action.undo","jsyntaxpane.actions.UndoAction, meta Z");
         config.put("Action.redo","jsyntaxpane.actions.RedoAction, meta shift Z");
-
         config.put("Action.delete-lines","jsyntaxpane.actions.DeleteLinesAction");
+        config.put("Action.delete-lines","jsyntaxpane.actions.DeleteLinesAction, control K");
     }
     
 }

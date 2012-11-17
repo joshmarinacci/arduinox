@@ -189,7 +189,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         
         
         
-        KeyboardUtils.setup(pane);
+        KeyboardUtils.setup(pane,actions);
         
         
         List<Device> boards = new ArrayList<>(Global.getGlobal().getDevices());
@@ -318,6 +318,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         });
         
         this.setTitle(actions.sketch.getName());
+        this.editors.get(0).requestFocus();
     }
 
     private void rebuildWindowMenu() {
@@ -397,6 +398,8 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         standardThemeItem.addActionListener(actions.switchStandardTheme);
         lightThemeItem.addActionListener(actions.switchLightTheme);
         darkThemeItem.addActionListener(actions.switchDarkTheme);
+        compileItem.addActionListener(actions.checkAction);
+        compileAndUploadItem.addActionListener(actions.runAction);
         
         for(File skfile : Global.getGlobal().getRecentSketches()){
             recentSketchesMenu.add(new JMenuItem(new OpenSketchAction(skfile)));
@@ -598,6 +601,9 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         redoItem = new javax.swing.JMenuItem();
         indentMenuItem = new javax.swing.JMenuItem();
         selectAll = new javax.swing.JMenuItem();
+        jMenu4 = new javax.swing.JMenu();
+        compileItem = new javax.swing.JMenuItem();
+        compileAndUploadItem = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         zoomInItem = new javax.swing.JMenuItem();
         zoomOutItem = new javax.swing.JMenuItem();
@@ -883,6 +889,18 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
 
         jMenuBar1.add(jMenu2);
 
+        jMenu4.setText("Sketch");
+
+        compileItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_K, java.awt.event.InputEvent.META_MASK));
+        compileItem.setText("Compile");
+        jMenu4.add(compileItem);
+
+        compileAndUploadItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.META_MASK));
+        compileAndUploadItem.setText("Compile and Upload");
+        jMenu4.add(compileAndUploadItem);
+
+        jMenuBar1.add(jMenu4);
+
         jMenu3.setText("View");
 
         zoomInItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_EQUALS, java.awt.event.InputEvent.META_MASK));
@@ -1147,6 +1165,8 @@ Style.WARNING 0xCC0000, 0
     private javax.swing.JComboBox boardDropdown;
     private javax.swing.JButton checkButton;
     private javax.swing.JMenuItem checkMenuItem;
+    private javax.swing.JMenuItem compileAndUploadItem;
+    private javax.swing.JMenuItem compileItem;
     private javax.swing.JTextArea console;
     private javax.swing.JTabbedPane consoleTabPane;
     private javax.swing.JToggleButton consoleToggle;
@@ -1166,6 +1186,7 @@ Style.WARNING 0xCC0000, 0
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
