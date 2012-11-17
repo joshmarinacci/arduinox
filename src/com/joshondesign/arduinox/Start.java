@@ -84,6 +84,7 @@ public class Start {
         });
     }
     public static void openLastSketch() {
+        if(Global.getGlobal().getOpenSketchCount() > 0)  return;
         try {
             Global global = Global.getGlobal();
             File sketchDir = new File(global.getDocumentsDir(),"Blink");

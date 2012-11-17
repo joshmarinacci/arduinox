@@ -437,6 +437,9 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         int width = sketch.getIntSetting("window.width",800);
         int height = sketch.getIntSetting("window.height", 600);
         this.setSize(width, height);
+        int x = sketch.getIntSetting("window.x", 100);
+        int y = sketch.getIntSetting("window.y", 100);
+        this.setLocation(x, y);
 
         consoleToggle.setSelected(sketch.getBooleanSetting("window.split.editor.open",true));
         rightToggle.setSelected(sketch.getBooleanSetting("window.split.sidebar.open",true));
@@ -457,6 +460,8 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
 
     void shutdown() {
         Sketch sketch = actions.sketch;
+        sketch.setIntSetting("window.x", getLocation().x);
+        sketch.setIntSetting("window.y", getLocation().y);
         sketch.setIntSetting("window.width",getWidth());
         sketch.setIntSetting("window.height",getHeight());
         sketch.setIntSetting("window.split.sidebar", masterSplitPosition);

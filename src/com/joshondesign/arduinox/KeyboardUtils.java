@@ -69,7 +69,7 @@ public class KeyboardUtils {
         List<String> keys = new ArrayList<String>(config.keySet());
         Collections.sort(keys);
         for(String key : keys) {
-            Util.p(key + " " + config.get(key));
+            //Util.p(key + " " + config.get(key));
         }
         config.put("Action.quick-find", "jsyntaxpane.actions.QuickFindAction, meta F");
         config.put("Action.goto-line",  "jsyntaxpane.actions.GotoLineAction, meta G");

@@ -369,6 +369,7 @@ public class Actions  {
     
     private void quit() {
         sketch.saveSettings();
+        Global.getGlobal().saveSettings();
         System.exit(0);
     }
     
@@ -382,6 +383,7 @@ public class Actions  {
             frame.pack();
             frame.setSize(800,600);        
             frame.setVisible(true);
+            frame.resetPosition();
         } catch (IOException ex) {
             Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
         }

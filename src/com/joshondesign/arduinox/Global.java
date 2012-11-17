@@ -43,6 +43,28 @@ public class Global {
     private File toolchainDir;
     private String TOOLCHAIN_DIR = "TOOLCHAIN_DIR";
     private String RECENT_SKETCHES = "RECENT_SKETCHES";
+    private String OPEN_SKETCHES = "OPEN_SKETCHES";
+    
+    public static void main(String ... args) throws IOException {
+        Properties props = new Properties();
+        props.setProperty("asdf", "asdfasdf");
+        Util.p("===");
+        for(Entry e : props.entrySet()) {
+            Util.p("key = " + e.getKey() + " " + e.getValue() );
+        }
+        props.storeToXML(new FileOutputStream("foo.xml"), "foo");
+        props.clear();
+        props = new Properties();
+        Util.p("===");
+        for(Entry e : props.entrySet()) {
+            Util.p("key = " + e.getKey() + " " + e.getValue() );
+        }
+        props.loadFromXML(new FileInputStream("foo.xml"));
+        Util.p("===");
+        for(Entry e : props.entrySet()) {
+            Util.p("key = " + e.getKey() + " " + e.getValue() );
+        }
+    }
     
     public static final int SERIAL_RATE_INTS[] = {
         300,1200,2400,4800,9600,14400,
@@ -60,10 +82,12 @@ public class Global {
 
     private Global() {
         recentSketches = new ArrayList<>();
-        loadSettings();
         this.ports = scanForSerialPorts();
         this.devices = scanForDevices();
         this.examples = scanForExamples();
+    }
+    private void init() {
+        loadSettings();
     }
     
     
@@ -71,14 +95,18 @@ public class Global {
     static Global getGlobal() {
         if(_global == null) {
             _global = new Global();
+            _global.init();
         }
         return _global;
     }
 
     void addSketch(Sketch sketch) {
         this.sketches.add(sketch);
-        this.recentSketches.add(sketch.getDirectory().getAbsolutePath());
-        saveSettings();
+        String path = sketch.getDirectory().getAbsolutePath();
+        if(!recentUniqueSketches.contains(path)) {
+            this.recentSketches.add(path);
+            this.recentUniqueSketches.add(path);
+        }
         pcs.firePropertyChange("sketches", sketches, sketch);
     }
     
@@ -225,16 +253,26 @@ public class Global {
 
     void setToolchainDir(File arduinoPath) {
         this.toolchainDir = arduinoPath;
-        saveSettings();
     }
     
     File getDocumentsDir() {
         return new File(System.getProperty("user.home"),"Documents/Arduino");
     }
 
-    private void saveSettings() {
+    public void saveSettings() {
         try {
+            Util.p("========= saving settings");
             Properties props = new Properties();
+            
+            StringBuffer sb2 = new StringBuffer();
+            for(Sketch sketch : getSketches()) {
+                Util.p("sketch open: " + sketch.getName());
+                sb2.append(sketch.getDirectory().getAbsolutePath());
+                sb2.append(",");
+            }
+            props.setProperty(OPEN_SKETCHES, sb2.toString());
+            
+            
             StringBuffer sb = new StringBuffer();
             for(String s : recentSketches) {
                 sb.append(s);
@@ -242,17 +280,14 @@ public class Global {
             }
             props.setProperty(RECENT_SKETCHES, sb.toString());
             Util.p("write out" + sb.toString());
-            props.storeToXML(new FileOutputStream("settings.xml"), "ArduinoX Settings");
+            props.store(new FileOutputStream("settings.props"), "foo");            
+            props.storeToXML(new FileOutputStream("settings.xml"), "ArduinoX Settings", "UTF-8");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
     private void loadSettings() {
-//        for(Entry<Object,Object> item : System.getProperties().entrySet()) {
-//            Util.p(item.getKey() + " " + item.getValue());
-//        }
-        
         Util.p("the toolchain path = " + System.getProperty("com.joshondesign.arduinox.toolchainpath"));
         String toolchainPath = System.getProperty("com.joshondesign.arduinox.toolchainpath");
         if("uselibrary".equals(toolchainPath)) {
@@ -263,11 +298,15 @@ public class Global {
         if(toolchainPath == null) {
             toolchainPath = System.getProperty("user.dir");
         }
-        Util.p("final toochain path = " + toolchainPath);
+        //Util.p("final toochain path = " + toolchainPath);
         this.setToolchainDir(new File(toolchainPath));
         try {
             Properties props = new Properties();
             props.loadFromXML(new FileInputStream("settings.xml"));
+            Util.p("Loaded settings: " + props.keySet().size());
+            Util.p("RECENT = " + props.getProperty(RECENT_SKETCHES));
+            Util.p("OPEN = " + props.getProperty(OPEN_SKETCHES));
+
             recentUniqueSketches = new HashSet<>();
             if(props.containsKey(RECENT_SKETCHES)) {
                 String[] s = props.getProperty(RECENT_SKETCHES).split(",");
@@ -279,6 +318,21 @@ public class Global {
                     recentSketches.add(ss);
                 }
             }
+            
+            Set<String> os = new HashSet<>();
+            if(props.containsKey(OPEN_SKETCHES)) {
+                String[] s = props.getProperty(OPEN_SKETCHES).split(",");
+                Util.p("open sketches = " + props.getProperty(OPEN_SKETCHES));
+                Util.p("count = " + s.length);
+                for(String ss : s) {
+                    Util.p("s = " + ss);
+                    if(!os.contains(ss)) {
+                        os.add(ss);
+                        Actions.openNewSketch(new File(ss));
+                    }
+                }
+            }
+            
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -328,10 +382,10 @@ public class Global {
             ex.name = e.attr("name");
             for(Elem k : e.xpath("keyword")) {
                 ex.keywords.add(k.text().toLowerCase());
-                Util.p("added keyword: " + k.text().toLowerCase());
+                //Util.p("added keyword: " + k.text().toLowerCase());
             }
             ex.description = e.xpathString("description/text()");
-            Util.p("parsed example: " + ex.name);
+            //Util.p("parsed example: " + ex.name);
             return ex;
         } catch (Exception ex) {
             Logger.getLogger(Global.class.getName()).log(Level.SEVERE, null, ex);
@@ -368,6 +422,13 @@ public class Global {
 
     int getOpenSketchCount() {
         return this.sketches.size();
+    }
+
+
+    private void p(Properties props) {
+        for(Entry e : props.entrySet()) {
+            Util.p("key = " + e.getKey() + " value = " + e.getValue());
+        }
     }
 
 }
