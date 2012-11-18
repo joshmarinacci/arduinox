@@ -153,7 +153,7 @@ copy over resources parts
         <classpath file="dist/ArduinoX.jar"/>
         <classpath file="dist/lib/RXTXcomm.jar"/>
         <classpath file="dist/lib/arduinocompile.jar"/>
-        <classpath file="dist/lib/jsyntaxpane.jar"/>
+        <classpath file="dist/lib/jsyntaxpane-0.9.6.jar"/>
         <classpath file="dist/lib/swing-layout-1.0.4.jar"/>
         <classpath file="dist/lib/XMLLib.jar"/>
         
