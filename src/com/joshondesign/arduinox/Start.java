@@ -5,32 +5,20 @@
 package com.joshondesign.arduinox;
 
 import com.apple.eawt.AppEvent.QuitEvent;
-import com.apple.eawt.AppEventListener;
 import com.apple.eawt.Application;
 import com.apple.eawt.QuitHandler;
 import com.apple.eawt.QuitResponse;
 import com.joshondesign.arduino.common.Util;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.plaf.basic.BasicEditorPaneUI;
 import jsyntaxpane.DefaultSyntaxKit;
-import jsyntaxpane.actions.ActionUtils;
 import jsyntaxpane.util.Configuration;
 
 /**
