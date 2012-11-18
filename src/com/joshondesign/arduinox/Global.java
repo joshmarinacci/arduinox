@@ -83,6 +83,7 @@ public class Global {
 
 
     private Global() {
+        setupToolchainPath();
         recentSketches = new ArrayList<>();
         this.ports = scanForSerialPorts();
         this.devices = scanForDevices();
@@ -299,18 +300,6 @@ public class Global {
     }
 
     private void loadSettings() {
-        Util.p("the toolchain path = " + System.getProperty("com.joshondesign.arduinox.toolchainpath"));
-        String toolchainPath = System.getProperty("com.joshondesign.arduinox.toolchainpath");
-        if("uselibrary".equals(toolchainPath)) {
-            String librarypath = System.getProperty("java.library.path");
-            File contentsDir = new File(librarypath).getParentFile();
-            toolchainPath = new File(contentsDir,"toolchain").getAbsolutePath();
-        }
-        if(toolchainPath == null) {
-            toolchainPath = System.getProperty("user.dir");
-        }
-        //Util.p("final toochain path = " + toolchainPath);
-        this.setToolchainDir(new File(toolchainPath));
         try {
             Properties props = new Properties();
             props.loadFromXML(new FileInputStream("settings.xml"));
@@ -447,6 +436,21 @@ public class Global {
 
     void setCompilerCommandsShown(boolean selected) {
         this.compilerCommandsShown = selected;
+    }
+
+    private void setupToolchainPath() {
+        Util.p("the toolchain path = " + System.getProperty("com.joshondesign.arduinox.toolchainpath"));
+        String toolchainPath = System.getProperty("com.joshondesign.arduinox.toolchainpath");
+        if("uselibrary".equals(toolchainPath)) {
+            String librarypath = System.getProperty("java.library.path");
+            File contentsDir = new File(librarypath).getParentFile();
+            toolchainPath = new File(contentsDir,"toolchain").getAbsolutePath();
+        }
+        if(toolchainPath == null) {
+            toolchainPath = System.getProperty("user.dir");
+        }
+        //Util.p("final toochain path = " + toolchainPath);
+        this.setToolchainDir(new File(toolchainPath));
     }
 
 }
