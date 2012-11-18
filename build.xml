@@ -187,6 +187,13 @@ copy over resources parts
     <copy todir="dist/mac/ArduinoX.app/Contents/toolchain">
         <fileset dir="${toolchain.dir}/macosx_universal/">
             <include name='**'/>
+            <exclude name='tools/avr/versions.txt'/>
+            <exclude name='tools/avr/revision.txt'/>
+            <exclude name='tools/avr/uninstall'/>
+            <exclude name='tools/avr/doc/**'/>
+            <exclude name='tools/avr/info/**'/>
+            <exclude name='tools/avr/man/**'/>
+            <exclude name='tools/avr/manual/**'/>
         </fileset>        
     </copy>
     
@@ -197,10 +204,23 @@ copy over resources parts
         </fileset>        
     </copy>
     
-    <zip zipfile="dist/mac/ArduinoX.zip">        
+    <property name="jrelib" value="ArduinoX.app/Contents/PlugIns/jdk1.7.0_09.jdk/Contents/Home/jre/lib"/>
+    <zip zipfile="dist/mac/ArduinoX.zip" level="9">        
         <zipfileset dir="dist/mac">
             <include name="ArduinoX.app/**"/>
             <exclude name="ArduinoX.app/Contents/MacOS/JavaAppLauncher"/>
+            <exclude name="${jrelib}/fxplugins.dylib"/>
+            <exclude name="${jrelib}/jfxrt.jar"/>
+            <exclude name="${jrelib}/libgstplugins-lite.dylib"/>
+            <exclude name="${jrelib}/libgstreamer-lite.dylib"/>
+            <exclude name="${jrelib}/libjavafx-font.dylib"/>
+            <exclude name="${jrelib}/libjavafx-iio.dylib"/>
+            <exclude name="${jrelib}/libjfxmedia.dylib"/>
+            <exclude name="${jrelib}/libjfxwebkit.dylib"/>
+            
+            <!-- trying these out -->
+            <exclude name="${jrelib}/charsets.jar"/>
+            <exclude name="${jrelib}/htmlconverter.jar"/>
         </zipfileset>
         <zipfileset dir="dist/mac" includes="ArduinoX.app/Contents/MacOS/JavaAppLauncher" filemode="755"/>
     </zip>
