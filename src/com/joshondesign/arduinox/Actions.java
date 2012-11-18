@@ -63,13 +63,15 @@ public class Actions  {
                 @Override
                 public void run() {
                     try {
+                        compilerOutput.clear();
                         CompileTask task = new CompileTask();
                         task.setSketchDir(sketch.getDirectory());
                         task.setUserLibrariesDir(new File(Global.getGlobal().getDocumentsDir(),"Libraries"));
                         task.setArduinoRoot(Global.getGlobal().getToolchainDir());
                         task.setDevice(sketch.getCurrentDevice());
-                        task.setOutputListener(new CompilerOutput());
+                        task.setOutputListener(compilerOutput);
                         task.assemble();
+                        compilerOutput.log("compile finished");
                     } catch (Exception ex) {
                         log(ex);
                         Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
@@ -132,6 +134,13 @@ public class Actions  {
                 ol.exec(string);
             }
         }
+
+        @Override
+        public void clear() {
+            for(OutputListener ol : logListeners) {
+                ol.clear();
+            }
+        }
     }
     
     
@@ -153,6 +162,7 @@ public class Actions  {
                     try {
                         log("Compiling");                        
                         sketch.getCurrentPort().lock();
+                        compilerOutput.clear();
                         CompileTask task = new CompileTask();
                         task.setSketchDir(sketch.getDirectory());
                         task.setUserLibrariesDir(new File(Global.getGlobal().getDocumentsDir(),"Libraries"));

@@ -117,6 +117,11 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
             public void stderr(String string) {
                 console.append("STDERR:  "+string+"\n");
             }
+
+            @Override
+            public void clear() {
+                console.setText("");
+            }
         });
         console.setAutoscrolls(true);
         /*
