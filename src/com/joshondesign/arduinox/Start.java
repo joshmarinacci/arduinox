@@ -43,14 +43,15 @@ public class Start {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Application.getApplication().setQuitHandler(new QuitHandler() {
-            @Override
-            public void handleQuitRequestWith(QuitEvent qe, QuitResponse qr) {
-                Actions.quitAction.actionPerformed(null);
-                qr.cancelQuit();
-            }
-        });
-        // TODO code application logic here
+        if(Util.isMacOSX()) {
+            Application.getApplication().setQuitHandler(new QuitHandler() {
+                @Override
+                public void handleQuitRequestWith(QuitEvent qe, QuitResponse qr) {
+                    Actions.quitAction.actionPerformed(null);
+                    qr.cancelQuit();
+                }
+            });
+        }
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
