@@ -220,7 +220,8 @@ copy over resources parts
             
             <!-- trying these out -->
             <exclude name="${jrelib}/charsets.jar"/>
-            <exclude name="${jrelib}/htmlconverter.jar"/>
+            <exclude name="${jrelib}/htmlconverter.jar"/> <!-- ancient applet thing -->
+            <exclude name="${jrelib}/jfr.jar"/> <!-- oracle jrocket stuff -->
         </zipfileset>
         <zipfileset dir="dist/mac" includes="ArduinoX.app/Contents/MacOS/JavaAppLauncher" filemode="755"/>
     </zip>
