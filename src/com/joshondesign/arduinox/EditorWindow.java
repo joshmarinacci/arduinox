@@ -150,7 +150,6 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
             @Override
             public void propertyChange(PropertyChangeEvent evt) {
                 float size = ((Float)evt.getNewValue()).floatValue();
-                Util.p("setting to : " + size);
                 for(JEditorPane pane : editors) {
                     pane.setFont(customFont.deriveFont(size));
                 }
@@ -171,22 +170,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
             pane.setBackground(actions.getCurrentTheme().backgroundColor);
         }
         
-        JEditorPane pane = editors.get(0);       
-        /*
-        List<Action> list = Arrays.asList(pane.getActions());
-        Collections.sort(list, new Comparator<Action>() {
-            @Override
-            public int compare(Action o1, Action o2) {
-                return ((String)o1.getValue(Action.NAME)).compareTo((String)o2.getValue(Action.NAME));
-            }
-        });
-        
-        for(Action a : list) {
-            Util.p("action = " + a.getValue(Action.NAME) + "   shortcut = " + a.getValue(Action.ACCELERATOR_KEY) );
-        }
-        * */
-        
-        
+        JEditorPane pane = editors.get(0);               
         //fix up the actions. this should eventually move to some new location
         
         Action cutAction = ActionUtils.getAction(pane, DefaultEditorKit.CutAction.class);
@@ -1025,7 +1009,6 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
     }//GEN-LAST:event_serialRateComboActionPerformed
 
     private void searchFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchFieldActionPerformed
-        Util.p("Searching");
         final List<Example> examples = Global.getGlobal().findExamplesByText(searchField.getText());
         AbstractListModel<Example> model = new AbstractListModel<Example>() {
             @Override
@@ -1043,7 +1026,6 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
 
     private void examplesListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_examplesListValueChanged
         if(examplesList.getSelectedValue() == null) return;
-        Util.p("selection changed");
         Example ex = (Example) examplesList.getSelectedValue();
         StringBuffer desc = new StringBuffer();
         desc.append("<html><body>");

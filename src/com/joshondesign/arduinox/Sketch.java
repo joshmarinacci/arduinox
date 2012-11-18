@@ -207,8 +207,6 @@ public class Sketch {
 
         void setText(String text) {
             this.code = text;
-            Util.p("code updated to: " + text);
         }
-        
     }
 }

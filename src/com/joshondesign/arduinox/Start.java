@@ -4,6 +4,11 @@
  */
 package com.joshondesign.arduinox;
 
+import com.apple.eawt.AppEvent.QuitEvent;
+import com.apple.eawt.AppEventListener;
+import com.apple.eawt.Application;
+import com.apple.eawt.QuitHandler;
+import com.apple.eawt.QuitResponse;
 import com.joshondesign.arduino.common.Util;
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +43,13 @@ public class Start {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        Application.getApplication().setQuitHandler(new QuitHandler() {
+            @Override
+            public void handleQuitRequestWith(QuitEvent qe, QuitResponse qr) {
+                Actions.quitAction.actionPerformed(null);
+                qr.cancelQuit();
+            }
+        });
         // TODO code application logic here
         SwingUtilities.invokeLater(new Runnable() {
             @Override

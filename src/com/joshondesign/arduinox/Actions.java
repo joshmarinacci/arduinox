@@ -179,10 +179,9 @@ public class Actions  {
 
     };
     
-    Action quitAction = new AbstractAction("Quit") {
+    public static Action quitAction = new AbstractAction("Quit") {
         @Override
         public void actionPerformed(ActionEvent e) {
-            log("Quitting");
             boolean dirty = false;
             for(Sketch sketch : Global.getGlobal().getSketches()) {
                 for(SketchBuffer buffer: sketch.getBuffers()) {
@@ -190,6 +189,7 @@ public class Actions  {
                 }
                 EditorWindow window = Global.getGlobal().getWindowForSketch(sketch);
                 window.shutdown();
+                sketch.saveSettings();
             }
             if(dirty) {
                 int result = JOptionPane.showConfirmDialog(null, "There are unsaved documents. Do you wish to save them?", "Unsaved Documents", JOptionPane.YES_NO_CANCEL_OPTION);
@@ -351,24 +351,25 @@ public class Actions  {
         this.logListeners.add(listener);
     }
     
-    private void saveBuffers() {
-        for(Sketch.SketchBuffer buffer : sketch.getBuffers()) {
-            if(buffer.isDirty()) {
-                try {
-                    //Util.p("saving: " + buffer.getFile().getAbsolutePath());
-                    //Util.p("text = " + buffer.getText());
-                    Util.toFile(buffer.getText(), buffer.getFile());
-                } catch (IOException ex) {
-                    Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
+    static private void saveBuffers() {
+        for(Sketch sketch :  Global.getGlobal().getSketches()) {
+            for(Sketch.SketchBuffer buffer : sketch.getBuffers()) {
+                if(buffer.isDirty()) {
+                    try {
+                        //Util.p("saving: " + buffer.getFile().getAbsolutePath());
+                        //Util.p("text = " + buffer.getText());
+                        Util.toFile(buffer.getText(), buffer.getFile());
+                    } catch (IOException ex) {
+                        Logger.getLogger(Actions.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    buffer.markClean();
                 }
-                buffer.markClean();
             }
+            sketch.saveSettings();
         }
-        sketch.saveSettings();
     }
     
-    private void quit() {
-        sketch.saveSettings();
+    static private void quit() {
         Global.getGlobal().saveSettings();
         System.exit(0);
     }
