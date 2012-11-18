@@ -130,8 +130,10 @@ public class Actions  {
 
         @Override
         public void exec(String string) {
-            for(OutputListener ol : logListeners) {
-                ol.exec(string);
+            if(Global.getGlobal().isCompilerCommandsShown()) {
+                for(OutputListener ol : logListeners) {
+                    ol.exec(string);
+                }
             }
         }
 

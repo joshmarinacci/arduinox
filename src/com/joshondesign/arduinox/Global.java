@@ -41,9 +41,10 @@ public class Global {
     private final List<Device> devices;
     private Device extracore;
     private File toolchainDir;
-    private String TOOLCHAIN_DIR = "TOOLCHAIN_DIR";
-    private String RECENT_SKETCHES = "RECENT_SKETCHES";
-    private String OPEN_SKETCHES = "OPEN_SKETCHES";
+    private static final String TOOLCHAIN_DIR = "TOOLCHAIN_DIR";
+    private static final String RECENT_SKETCHES = "RECENT_SKETCHES";
+    private static final String OPEN_SKETCHES = "OPEN_SKETCHES";
+    private static final String COMPILER_COMMANDS_SHOWN = "COMPILER_COMMANDS_SHOWN";
     
     public static void main(String ... args) throws IOException {
         Properties props = new Properties();
@@ -78,6 +79,7 @@ public class Global {
     private List<String> recentSketches;
     private Set<String> recentUniqueSketches;
     private final List<Example> examples;
+    private boolean compilerCommandsShown;
 
 
     private Global() {
@@ -266,7 +268,6 @@ public class Global {
             
             StringBuffer sb2 = new StringBuffer();
             for(Sketch sketch : getSketches()) {
-                Util.p("sketch open: " + sketch.getName());
                 sb2.append(sketch.getDirectory().getAbsolutePath());
                 sb2.append(",");
             }
@@ -279,7 +280,9 @@ public class Global {
                 sb.append(",");
             }
             props.setProperty(RECENT_SKETCHES, sb.toString());
-            Util.p("write out" + sb.toString());
+            props.setProperty(COMPILER_COMMANDS_SHOWN, Boolean.toString(isCompilerCommandsShown()));
+            
+            
             props.store(new FileOutputStream("settings.props"), "foo");            
             props.storeToXML(new FileOutputStream("settings.xml"), "ArduinoX Settings", "UTF-8");
         } catch (IOException ex) {
@@ -304,8 +307,6 @@ public class Global {
             Properties props = new Properties();
             props.loadFromXML(new FileInputStream("settings.xml"));
             Util.p("Loaded settings: " + props.keySet().size());
-            Util.p("RECENT = " + props.getProperty(RECENT_SKETCHES));
-            Util.p("OPEN = " + props.getProperty(OPEN_SKETCHES));
 
             recentUniqueSketches = new HashSet<>();
             if(props.containsKey(RECENT_SKETCHES)) {
@@ -322,15 +323,16 @@ public class Global {
             Set<String> os = new HashSet<>();
             if(props.containsKey(OPEN_SKETCHES)) {
                 String[] s = props.getProperty(OPEN_SKETCHES).split(",");
-                Util.p("open sketches = " + props.getProperty(OPEN_SKETCHES));
-                Util.p("count = " + s.length);
                 for(String ss : s) {
-                    Util.p("s = " + ss);
                     if(!os.contains(ss)) {
                         os.add(ss);
                         Actions.openNewSketch(new File(ss));
                     }
                 }
+            }
+            
+            if(props.containsKey(COMPILER_COMMANDS_SHOWN)) {
+                compilerCommandsShown = Boolean.parseBoolean(props.getProperty(COMPILER_COMMANDS_SHOWN, "true"));
             }
             
         } catch (IOException ex) {
@@ -429,6 +431,14 @@ public class Global {
         for(Entry e : props.entrySet()) {
             Util.p("key = " + e.getKey() + " value = " + e.getValue());
         }
+    }
+
+    boolean isCompilerCommandsShown() {
+        return compilerCommandsShown;
+    }
+
+    void setCompilerCommandsShown(boolean selected) {
+        this.compilerCommandsShown = selected;
     }
 
 }

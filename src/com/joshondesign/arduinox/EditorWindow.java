@@ -110,12 +110,12 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
 
             @Override
             public void stdout(String string) {
-                console.append("STDOUT: " +string+"\n");
+                console.append("STDOUT: " +string);
             }
 
             @Override
             public void stderr(String string) {
-                console.append("STDERR:  "+string+"\n");
+                console.append("STDERR:  "+string);
             }
 
             @Override
@@ -621,6 +621,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         redoItem = new javax.swing.JMenuItem();
         indentMenuItem = new javax.swing.JMenuItem();
         selectAll = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         compileItem = new javax.swing.JMenuItem();
         compileAndUploadItem = new javax.swing.JMenuItem();
@@ -907,6 +908,14 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         });
         jMenu2.add(selectAll);
 
+        jMenuItem1.setText("Settings");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem1);
+
         jMenuBar1.add(jMenu2);
 
         jMenu4.setText("Sketch");
@@ -1061,6 +1070,12 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         // TODO add your handling code here:
     }//GEN-LAST:event_masterSplitPropertyChange
 
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        SettingsWindow settings = new SettingsWindow();
+        settings.pack();
+        settings.setVisible(true);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
 
     private void updateTheme(ColorTheme theme, JEditorPane pane) {
         EditorKit editorKit = pane.getEditorKit();
@@ -1206,6 +1221,7 @@ Style.WARNING 0xCC0000, 0
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
