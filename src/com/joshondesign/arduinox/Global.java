@@ -211,7 +211,15 @@ public class Global {
         List<Device> devices  = new ArrayList<>();
         try {
             File basedir = getResourcesDir();
+            if(basedir == null) {
+                Util.p("resources dir is null!");
+                return devices;
+            }
             Util.p("resources dir = " + basedir.getCanonicalPath());
+            if(!basedir.exists()) {
+                Util.p("resources dir doesn't exist!");
+                return devices;
+            }
             for(File xml : new File(basedir,"hardware/boards/").listFiles()) {
                 Util.p("parsing: " + xml.getCanonicalPath());
                 try {
