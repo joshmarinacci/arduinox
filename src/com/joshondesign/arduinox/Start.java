@@ -97,8 +97,8 @@ public class Start {
             global.setWindowForSketch(sketch, frame);
             frame.pack();
             frame.resetPosition();
-        } catch (IOException ex) {
-            Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Throwable thr) {
+            thr.printStackTrace();
         }
 
     }

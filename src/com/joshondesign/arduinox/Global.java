@@ -77,7 +77,7 @@ public class Global {
         "19200","28800","38400","57600","115200"
     };
     private List<String> recentSketches;
-    private Set<String> recentUniqueSketches;
+    private Set<String> recentUniqueSketches = new HashSet<>();
     private final List<Example> examples;
     private boolean compilerCommandsShown;
 
@@ -134,9 +134,10 @@ public class Global {
         this.pcs.addPropertyChangeListener(property,listener);
     }
     
-    List<SerialPort> scanForSerialPorts() {
+    private List<SerialPort> scanForSerialPorts() {
         
         List<SerialPort> ports = new ArrayList<>();
+        try {
         
         //get all ports
         for (Enumeration enumeration = CommPortIdentifier.getPortIdentifiers(); enumeration.hasMoreElements();) {
@@ -177,6 +178,9 @@ public class Global {
             Util.p("final port = " + port.portName + " short = " + port.shortName);
         }
         
+        } catch (Throwable thr) {
+            thr.printStackTrace();
+        }
         //sort by name
         //if only one, use it.
         return ports;
@@ -201,8 +205,8 @@ public class Global {
             File exdir = new File(getResourcesDir(),"examples/");
             Util.p("basedir = " + exdir.getCanonicalPath());
             scanForExamples(exdir,examples);
-        } catch (IOException ex) {
-            Logger.getLogger(Global.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Throwable thr) {
+            thr.printStackTrace();
         }
         return examples;
     }
@@ -247,7 +251,7 @@ public class Global {
                     Logger.getLogger(Global.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        } catch (IOException ex2) {
+        } catch (Throwable ex2) {
             ex2.printStackTrace();
         }
         
@@ -305,7 +309,7 @@ public class Global {
             props.loadFromXML(new FileInputStream("settings.xml"));
             Util.p("Loaded settings: " + props.keySet().size());
 
-            recentUniqueSketches = new HashSet<>();
+            recentUniqueSketches.clear();
             if(props.containsKey(RECENT_SKETCHES)) {
                 String[] s = props.getProperty(RECENT_SKETCHES).split(",");
                 for(String ss : s) {
