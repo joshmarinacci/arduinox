@@ -1,7 +1,5 @@
-arduinox
+ArduinoX: IDE for Arduino
 ========
-
-Alternate IDE for Arduino
 
 ArduinoX (pending a better name) is an alternative IDE for Arduino. It focuses on
 having a better out of the box experience than the standard IDE. It is more

@@ -86,7 +86,7 @@
 <target name="win64-bundle" depends="jar, bundle-settings">
     <mkdir dir='dist'/>
     <mkdir dir='dist/win64'/>
-    <property name="outdir" value="dist/win64/win"/>
+    <property name="outdir64" value="dist/win64/win"/>
     <java
         classpath="appbundler_josh.jar;lib/XMLLib.jar"
         classname="com.joshondesign.appbundler.Bundler" fork="true">
@@ -97,25 +97,25 @@
         <arg value="--jardir=dist/"/>
     </java>        
 
-    <copy todir="${outdir}/jre">
+    <copy todir="${outdir64}/jre">
         <fileset dir="${win64.jdk}">
             <include name="**"/>
         </fileset>
     </copy>
     
-    <copy todir="${outdir}">
+    <copy todir="${outdir64}">
         <fileset dir="${toolchain.dir}/windows">
             <include name="**"/>
         </fileset>
     </copy>
     
-    <copy todir="${outdir}/resources">
+    <copy todir="${outdir64}/resources">
         <fileset dir="${resources.dir}">
             <include name="**"/>
         </fileset>
     </copy>
     
-    <copy todir="${outdir}/lib" file="lib/win64/rxtxSerial.dll"/>
+    <copy todir="${outdir64}/lib" file="lib/win64/rxtxSerial.dll"/>
     <zip zipfile="dist/ArduinoX-win64.zip" basedir="dist/win64" includes="win/**">        
     </zip>
 </target>
@@ -123,7 +123,7 @@
 <target name="win32-bundle" depends="jar, bundle-settings">
     <mkdir dir='dist'/>
     <mkdir dir='dist/win32'/>
-    <property name="outdir" value="dist/win32/win"/>
+    <property name="outdir32" value="dist/win32/win"/>
     <java
         classpath="appbundler_josh.jar;lib/XMLLib.jar"
         classname="com.joshondesign.appbundler.Bundler" fork="true">
@@ -134,25 +134,25 @@
         <arg value="--jardir=dist/"/>
     </java>        
 
-    <copy todir="${outdir}/jre">
+    <copy todir="${outdir32}/jre">
         <fileset dir="${win32.jdk}">
             <include name="**"/>
         </fileset>
     </copy>
     
-    <copy todir="${outdir}">
+    <copy todir="${outdir32}">
         <fileset dir="${toolchain.dir}/windows">
             <include name="**"/>
         </fileset>
     </copy>
     
-    <copy todir="${outdir}/resources">
+    <copy todir="${outdir32}/resources">
         <fileset dir="${resources.dir}">
             <include name="**"/>
         </fileset>
     </copy>
     
-    <copy todir="${outdir}/lib" file="lib/win64/rxtxSerial.dll"/>
+    <copy todir="${outdir32}/lib" file="lib/win64/rxtxSerial.dll"/>
     <zip zipfile="dist/ArduinoX-win32.zip" basedir="dist/win32" includes="win/**">        
     </zip>
 </target>
