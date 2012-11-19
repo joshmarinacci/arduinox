@@ -75,16 +75,17 @@
 <target name="bundle-settings">
     <property name="toolchain.dir" value="/Users/josh/projects/ArduinoIDE/toolchains"/>
     <property name="mac.jdk" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_09.jdk/"/>
-    <property name="win.jdk" value="/Users/josh/projects/ArduinoIDE/toolchains/jre7"/>
+    <property name="win64.jdk" value="C:\Program Files\Java\jre7"/>
+    <property name="win32.jdk" value="C:\Program Files (x86)\Java\jre7"/>
     <property name="resources.dir" value="/Users/josh/Documents/Arduino/arduino-resources/"/>
     <!--
     <property name="toolchain.dir" value="/home/joshy/hudson_libs/arduino_toolchains"/>
     -->
 </target>
 
-<target name="win-bundle" depends="jar, bundle-settings">
+<target name="win64-bundle" depends="jar, bundle-settings">
     <mkdir dir='dist'/>
-    <mkdir dir='dist/win'/>
+    <mkdir dir='dist/win64'/>
     <java
         classpath="appbundler_josh.jar;lib/XMLLib.jar"
         classname="com.joshondesign.appbundler.Bundler" fork="true">
@@ -101,29 +102,70 @@ copy over the right serial native lib
 copy over resources parts
 -->
 
-    <copy todir="dist/win/jre">
-        <fileset dir="${win.jdk}">
+    <copy todir="dist/win64/jre">
+        <fileset dir="${win64.jdk}">
             <include name="**"/>
         </fileset>
     </copy>
     
-    <copy todir="dist/win">
+    <copy todir="dist/win64">
         <fileset dir="${toolchain.dir}/windows">
             <include name="**"/>
         </fileset>
     </copy>
     
-    <copy todir="dist/win/resources">
+    <copy todir="dist/win64/resources">
         <fileset dir="${resources.dir}">
             <include name="**"/>
         </fileset>
     </copy>
     
-    <copy todir="dist/win/lib" file="lib/win64/rxtxSerial.dll"/>
-    <zip zipfile="dist/ArduinoX-win.zip" basedir="dist/" includes="win/**">        
+    <copy todir="dist/win64/lib" file="lib/win64/rxtxSerial.dll"/>
+    <zip zipfile="dist/ArduinoX-win64.zip" basedir="dist/" includes="win64/**">        
     </zip>
 </target>
 
+<target name="win32-bundle" depends="jar, bundle-settings">
+    <mkdir dir='dist'/>
+    <mkdir dir='dist/win32'/>
+    <java
+        classpath="appbundler_josh.jar;lib/XMLLib.jar"
+        classname="com.joshondesign.appbundler.Bundler" fork="true">
+        <arg value="--file=bundle.xml"/>
+        <arg value="--target=win"/>
+        <arg value="--outdir=dist"/>
+        <arg value="--jardir=dist/lib/"/>
+        <arg value="--jardir=dist/"/>
+    </java>        
+<!--
+copy in a jre
+copy over toolchain parts
+copy over the right serial native lib
+copy over resources parts
+-->
+
+    <copy todir="dist/win32/jre">
+        <fileset dir="${win32.jdk}">
+            <include name="**"/>
+        </fileset>
+    </copy>
+    
+    <copy todir="dist/win32">
+        <fileset dir="${toolchain.dir}/windows">
+            <include name="**"/>
+        </fileset>
+    </copy>
+    
+    <copy todir="dist/win32/resources">
+        <fileset dir="${resources.dir}">
+            <include name="**"/>
+        </fileset>
+    </copy>
+    
+    <copy todir="dist/win32/lib" file="lib/win32/rxtxSerial.dll"/>
+    <zip zipfile="dist/ArduinoX-win32.zip" basedir="dist/" includes="win32/**">        
+    </zip>
+</target>
     
 <target name="mac-bundle" depends="bundle-settings, jar">
     <mkdir dir="dist"/>
@@ -144,7 +186,7 @@ copy over resources parts
         applicationCategory="public.app-category.entertainment">
 
         <!-- The directory where your OpenJDK runtime is. -->
-<!--         <runtime dir="/Library/Java/JavaVirtualMachines/jdk1.7.0_09.jdk/Contents/Home/"/>-->
+        <!--         <runtime dir="/Library/Java/JavaVirtualMachines/jdk1.7.0_09.jdk/Contents/Home/"/>-->
         <runtime dir="${mac.jdk}Contents/Home/"/>
 
         <!-- The bundleapp task doesn't support classpathref so all 
@@ -163,7 +205,7 @@ copy over resources parts
              doesn't work. (It's not a bug in AppBundler but 
              in the JavaAppLauncher, see Known Problems).
         -->
-<!--        <option value="-Xdock:icon=Contents/Resources/${bundle.icon}"/> -->
+        <!--        <option value="-Xdock:icon=Contents/Resources/${bundle.icon}"/> -->
 
         <!-- OSX specific options, optional -->
         <option value="-Dapple.laf.useScreenMenuBar=true"/>
