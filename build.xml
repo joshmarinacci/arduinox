@@ -85,8 +85,8 @@
 
 <target name="win64-bundle" depends="jar, bundle-settings">
     <mkdir dir='dist'/>
-    <property name="outdir" value="dist/win64/win"/>
     <mkdir dir='dist/win64'/>
+    <property name="outdir" value="dist/win64/win"/>
     <java
         classpath="appbundler_josh.jar;lib/XMLLib.jar"
         classname="com.joshondesign.appbundler.Bundler" fork="true">
@@ -116,14 +116,14 @@
     </copy>
     
     <copy todir="${outdir}/lib" file="lib/win64/rxtxSerial.dll"/>
-    <zip zipfile="dist/ArduinoX-win64.zip" basedir="dist/" includes="win64/win/**">        
+    <zip zipfile="dist/ArduinoX-win64.zip" basedir="dist/win64" includes="win/**">        
     </zip>
 </target>
 
 <target name="win32-bundle" depends="jar, bundle-settings">
     <mkdir dir='dist'/>
-    <property name="outdir" value="dist/win32/win"/>
     <mkdir dir='dist/win32'/>
+    <property name="outdir" value="dist/win32/win"/>
     <java
         classpath="appbundler_josh.jar;lib/XMLLib.jar"
         classname="com.joshondesign.appbundler.Bundler" fork="true">
@@ -153,7 +153,7 @@
     </copy>
     
     <copy todir="${outdir}/lib" file="lib/win64/rxtxSerial.dll"/>
-    <zip zipfile="dist/ArduinoX-win32.zip" basedir="dist/" includes="win32/win/**">        
+    <zip zipfile="dist/ArduinoX-win32.zip" basedir="dist/win32" includes="win/**">        
     </zip>
 </target>
     
