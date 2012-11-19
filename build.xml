@@ -162,7 +162,7 @@ copy over resources parts
         </fileset>
     </copy>
     
-    <copy todir="dist/win32/lib" file="lib/win32/rxtxSerial.dll"/>
+    <copy todir="dist/win32/lib" file="lib/win64/rxtxSerial.dll"/>
     <zip zipfile="dist/ArduinoX-win32.zip" basedir="dist/" includes="win32/**">        
     </zip>
 </target>
