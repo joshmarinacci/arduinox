@@ -127,13 +127,14 @@ copy over resources parts
 
 <target name="win32-bundle" depends="jar, bundle-settings">
     <mkdir dir='dist'/>
+    <property name="outdir" value="dist/win32/win"/>
     <mkdir dir='dist/win32'/>
     <java
         classpath="appbundler_josh.jar;lib/XMLLib.jar"
         classname="com.joshondesign.appbundler.Bundler" fork="true">
         <arg value="--file=bundle.xml"/>
         <arg value="--target=win"/>
-        <arg value="--outdir=dist"/>
+        <arg value="--outdir=dist/win32"/>
         <arg value="--jardir=dist/lib/"/>
         <arg value="--jardir=dist/"/>
     </java>        
@@ -144,26 +145,26 @@ copy over the right serial native lib
 copy over resources parts
 -->
 
-    <copy todir="dist/win32/jre">
+    <copy todir="${outdir}/jre">
         <fileset dir="${win32.jdk}">
             <include name="**"/>
         </fileset>
     </copy>
     
-    <copy todir="dist/win32">
+    <copy todir="${outdir}">
         <fileset dir="${toolchain.dir}/windows">
             <include name="**"/>
         </fileset>
     </copy>
     
-    <copy todir="dist/win32/resources">
+    <copy todir="${outdir}/resources">
         <fileset dir="${resources.dir}">
             <include name="**"/>
         </fileset>
     </copy>
     
-    <copy todir="dist/win32/lib" file="lib/win64/rxtxSerial.dll"/>
-    <zip zipfile="dist/ArduinoX-win32.zip" basedir="dist/" includes="win32/**">        
+    <copy todir="${outdir}/lib" file="lib/win64/rxtxSerial.dll"/>
+    <zip zipfile="dist/ArduinoX-win32.zip" basedir="dist/" includes="win32/win/**">        
     </zip>
 </target>
     
