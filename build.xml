@@ -152,7 +152,7 @@
         </fileset>
     </copy>
     
-    <copy todir="${outdir32}/lib" file="lib/win64/rxtxSerial.dll"/>
+    <copy todir="${outdir32}/lib" file="lib/win32/rxtxSerial.dll"/>
     <zip zipfile="dist/ArduinoX-win32.zip" basedir="dist/win32" includes="win/**">        
     </zip>
 </target>
