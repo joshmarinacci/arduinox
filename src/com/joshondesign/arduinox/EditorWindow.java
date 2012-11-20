@@ -759,6 +759,11 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         jSplitPane1.setRightComponent(jScrollPane4);
 
         jButton2.setText("Clone");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -770,7 +775,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
                     .add(jPanel2Layout.createSequentialGroup()
                         .add(searchField)
                         .addContainerGap())
-                    .add(jSplitPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .add(jSplitPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 255, Short.MAX_VALUE)
                     .add(jPanel2Layout.createSequentialGroup()
                         .add(0, 0, Short.MAX_VALUE)
                         .add(jButton2))))
@@ -781,7 +786,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
                 .addContainerGap()
                 .add(searchField, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(jSplitPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 324, Short.MAX_VALUE)
+                .add(jSplitPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 322, Short.MAX_VALUE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jButton2))
         );
@@ -961,14 +966,14 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jToolBar1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .add(masterSplit, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .add(masterSplit)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .add(jToolBar1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(masterSplit, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 449, Short.MAX_VALUE))
+                .add(masterSplit))
         );
 
         pack();
@@ -1075,6 +1080,25 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         settings.pack();
         settings.setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+
+        try {
+            Util.p("viewing an example: " + examplesList.getSelectedValue());
+            Example example = (Example) examplesList.getSelectedValue();
+            Global global = Global.getGlobal();
+            File newdir = example.cloneTo(global.getDocumentsDir());
+            Sketch sketch  = new Sketch(newdir);
+            global.addSketch(sketch);
+            Actions actions = new Actions(sketch);
+            EditorWindow frame = new EditorWindow(actions);
+            global.setWindowForSketch(sketch, frame);
+            frame.pack();
+            frame.resetPosition();
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
 
 
     private void updateTheme(ColorTheme theme, JEditorPane pane) {

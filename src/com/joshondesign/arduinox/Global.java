@@ -388,6 +388,7 @@ public class Global {
                 //Util.p("added keyword: " + k.text().toLowerCase());
             }
             ex.description = e.xpathString("description/text()");
+            ex.directory = file.getParentFile();
             //Util.p("parsed example: " + ex.name);
             return ex;
         } catch (Exception ex) {
