@@ -100,22 +100,22 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
 
             @Override
             public void log(String string) {
-                console.append("INFO: "+string+"\n");
+                ((ConsoleTextPane)console).appendInfo(string);
             }
 
             @Override
             public void exec(String string) {
-                console.append("EXEC: " + string+"\n");
+                ((ConsoleTextPane)console).appendExec(string);
             }
 
             @Override
             public void stdout(String string) {
-                console.append("STDOUT: " +string);
+                ((ConsoleTextPane)console).appendSTDOUT(string);
             }
 
             @Override
             public void stderr(String string) {
-                console.append("STDERR:  "+string);
+                ((ConsoleTextPane)console).appendSTDERR(string);
             }
 
             @Override
@@ -574,8 +574,8 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         editorSplit = new javax.swing.JSplitPane();
         tabbedPane = new javax.swing.JTabbedPane();
         consoleTabPane = new javax.swing.JTabbedPane();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        console = new javax.swing.JTextArea();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        console = new ConsoleTextPane();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         serialConsole = new javax.swing.JTextArea();
@@ -651,11 +651,9 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
         });
         editorSplit.setLeftComponent(tabbedPane);
 
-        console.setColumns(20);
-        console.setRows(5);
-        jScrollPane1.setViewportView(console);
+        jScrollPane5.setViewportView(console);
 
-        consoleTabPane.addTab("Compiler", jScrollPane1);
+        consoleTabPane.addTab("Compiler", jScrollPane5);
 
         serialConsole.setEditable(false);
         serialConsole.setColumns(20);
@@ -717,7 +715,7 @@ public class EditorWindow extends javax.swing.JFrame implements SerialPort.PortC
                 .add(serialPortLabel)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(serialRateCombo, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 32, Short.MAX_VALUE)
                 .add(jButton1)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(autoScroll)
@@ -1224,7 +1222,7 @@ Style.WARNING 0xCC0000, 0
     private javax.swing.JMenuItem checkMenuItem;
     private javax.swing.JMenuItem compileAndUploadItem;
     private javax.swing.JMenuItem compileItem;
-    private javax.swing.JTextArea console;
+    private javax.swing.JTextPane console;
     private javax.swing.JTabbedPane consoleTabPane;
     private javax.swing.JToggleButton consoleToggle;
     private javax.swing.JMenuItem copyItem;
@@ -1248,10 +1246,10 @@ Style.WARNING 0xCC0000, 0
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
