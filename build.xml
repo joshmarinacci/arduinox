@@ -71,8 +71,24 @@
     nbproject/build-impl.xml file. 
 
     -->
+
+<target name="get-resources">
+   <taskdef resource="org/eclipse/jgit/ant/ant-tasks.properties">
+       <classpath>
+         <pathelement location="bin/jgit.jar"/>
+         <pathelement location="bin/org.eclipse.jgit.ant.jar"/>
+         <pathelement location="bin/jsch.jar"/>
+       </classpath>
+   </taskdef>
+   
+   <delete dir="../blahs"/>
+   <git-clone uri="https://github.com/joshmarinacci/arduino-resources.git" dest="../blahs"/>
+   <git-checkout src="../blahs" branch="HEAD"/>
+   <property name="resources.dir" value="../blahs/"/>
+   
+</target>
     
-<target name="bundle-settings">
+<target name="bundle-settings" depends="get-resources">
     <property name="toolchain.dir" value="/Users/josh/projects/ArduinoIDE/toolchains"/>
     <property name="mac.jdk" value="/Library/Java/JavaVirtualMachines/jdk1.7.0_09.jdk/"/>
     <property name="win64.jdk" value="C:\Program Files\Java\jre7"/>
@@ -82,6 +98,7 @@
     <property name="toolchain.dir" value="/home/joshy/hudson_libs/arduino_toolchains"/>
     -->
 </target>
+
 
 <target name="win64-bundle" depends="jar, bundle-settings">
     <mkdir dir='dist'/>
