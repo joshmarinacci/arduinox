@@ -64,6 +64,7 @@ public class Actions  {
                 public void run() {
                     try {
                         compilerOutput.clear();
+                        compilerOutput.log("starting compile");
                         CompileTask task = new CompileTask();
                         task.setSketchDir(sketch.getDirectory());
                         task.setUserLibrariesDir(new File(Global.getGlobal().getDocumentsDir(),"Libraries"));
